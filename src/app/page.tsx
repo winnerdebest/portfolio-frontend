@@ -58,7 +58,7 @@ interface Project {
   link: string;
 }
 
-const TYPEWRITER_TEXTS = ['Full-Stack Developer', 'Python Expert', 'Django Specialist', 'Problem Solver'];
+const TYPEWRITER_TEXTS = ['Web Developer', 'Python Developer', 'Fun Dev', '🤷‍♀️'];
 
 const Portfolio = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -218,14 +218,7 @@ const Portfolio = () => {
                 )}
               </button>
               
-              <a 
-                href="/resume.pdf" 
-                download
-                className="px-4 sm:px-6 py-2 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-full hover:shadow-lg hover:shadow-violet-500/50 transition-all flex items-center gap-2 text-sm sm:text-base"
-              >
-                <Download className="w-4 h-4" />
-                <span className="hidden sm:inline">Resume</span>
-              </a>
+              
             </div>
 
             {/* Mobile Menu Button - Show on medium and small screens */}
@@ -346,8 +339,8 @@ const Portfolio = () => {
               <p className={`text-base sm:text-lg leading-relaxed max-w-xl transition-colors duration-300 ${
                 isDarkMode ? 'text-gray-400' : 'text-gray-600'
               }`}>
-                I craft beautiful, functional web applications with modern technologies. 
-                Passionate about creating digital experiences that make a difference.
+                I'm a web developer, i dont want to bore you with all the professional and techy stuff,
+                Keep scroolling and see what interests you the most about me.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2">
@@ -355,7 +348,7 @@ const Portfolio = () => {
                   onClick={() => scrollToSection('projects')}
                   className="group px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-xl font-semibold hover:shadow-xl hover:shadow-violet-500/50 transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base"
                 >
-                  <span>View My Work</span>
+                  <span>Winner's Projects</span>
                   <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
                 <button
@@ -367,7 +360,7 @@ const Portfolio = () => {
                   }`}
                 >
                   <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
-                  <span>Get In Touch</span>
+                  <span>Lets Talk</span>
                 </button>
               </div>
 
@@ -426,14 +419,14 @@ const Portfolio = () => {
                   <div className="absolute -top-3 -right-3 sm:-top-4 sm:-right-4 bg-gradient-to-r from-emerald-500 to-green-400 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full shadow-lg animate-float">
                     <div className="flex items-center gap-1 sm:gap-2">
                       <Star className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="text-xs sm:text-sm font-semibold">Python Dev</span>
+                      <span className="text-xs sm:text-sm font-semibold">Andriod Lover</span>
                     </div>
                   </div>
                   
                   <div className="absolute -bottom-3 -left-3 sm:-bottom-4 sm:-left-4 bg-gradient-to-r from-violet-500 to-purple-400 text-white px-2 py-1 sm:px-4 sm:py-2 rounded-full shadow-lg animate-float" style={{ animationDelay: '1s' }}>
                     <div className="flex items-center gap-1 sm:gap-2">
                       <Sparkles className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="text-xs sm:text-sm font-semibold">Full-Stack</span>
+                      <span className="text-xs sm:text-sm font-semibold">Web Dev</span>
                     </div>
                   </div>
                 </div>
@@ -458,11 +451,11 @@ const Portfolio = () => {
           <div className="text-center mb-8 sm:mb-16">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 sm:mb-6">
               <span className="bg-gradient-to-r from-violet-600 to-purple-500 bg-clip-text text-transparent">
-                About Me
+                Who Am I?
               </span>
             </h2>
             <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto px-4">
-              Passionate developer with expertise in modern web technologies and a focus on creating impactful digital solutions
+              A question that is about to be answered.
             </p>
           </div>
 
@@ -472,15 +465,14 @@ const Portfolio = () => {
                 <p className={`text-base sm:text-lg leading-relaxed transition-colors duration-300 ${
                   isDarkMode ? 'text-gray-300' : 'text-gray-700'
                 }`}>
-                  I'm a dedicated full-stack developer specializing in Python, Django, and modern JavaScript frameworks. 
-                  My journey in tech started with a curiosity for building things, which evolved into a passion for creating 
-                  elegant solutions to complex problems.
+                  I’m a developer who handles the technical side so you can focus on what matters. I build and maintain websites, manage servers, and make sure everything runs smoothly behind the scenes. If it’s complex, tedious, or critical then that’s my lane.
                 </p>
                 <p className={`text-base sm:text-lg leading-relaxed transition-colors duration-300 ${
                   isDarkMode ? 'text-gray-300' : 'text-gray-700'
                 }`}>
-                  What drives me is the opportunity to bridge the gap between technical excellence and user experience. 
-                  I believe that great software should not only work perfectly but also delight users and solve real-world problems.
+                 It took years to build these skills with a fair share of mistakes along the way but trust me, those days are long gone 😄.
+Proficient in both frontend and backend technologies, you won’t have to worry about a thing.
+Take a look at some of my projects and see if my style fits what you’re looking for.
                 </p>
               </div>
 
@@ -488,19 +480,19 @@ const Portfolio = () => {
                 <div className={`p-4 sm:p-5 rounded-xl shadow-sm border transition-all duration-300 hover:shadow-md hover:scale-105 ${
                   isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                 }`}>
-                  <div className="text-2xl sm:text-3xl font-bold text-violet-600 mb-1 sm:mb-2">12+</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-violet-600 mb-1 sm:mb-2">10+</div>
                   <div className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Projects Delivered</div>
                 </div>
                 <div className={`p-4 sm:p-5 rounded-xl shadow-sm border transition-all duration-300 hover:shadow-md hover:scale-105 ${
                   isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                 }`}>
-                  <div className="text-2xl sm:text-3xl font-bold text-violet-600 mb-1 sm:mb-2">1+</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-violet-600 mb-1 sm:mb-2">5+</div>
                   <div className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Years Experience</div>
                 </div>
                 <div className={`p-4 sm:p-5 rounded-xl shadow-sm border transition-all duration-300 hover:shadow-md hover:scale-105 ${
                   isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
                 }`}>
-                  <div className="text-2xl sm:text-3xl font-bold text-violet-600 mb-1 sm:mb-2">100%</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-violet-600 mb-1 sm:mb-2">95%</div>
                   <div className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Client Satisfaction</div>
                 </div>
               </div>
@@ -529,25 +521,7 @@ const Portfolio = () => {
                 </ul>
               </div>
 
-              <div className={`p-5 sm:p-6 rounded-2xl border transition-all duration-300 ${
-                isDarkMode 
-                  ? 'bg-gradient-to-br from-blue-900/30 to-cyan-900/30 border-blue-800' 
-                  : 'bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200'
-              }`}>
-                <h3 className={`text-lg sm:text-xl font-semibold mb-3 sm:mb-4 ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}`}>Currently Learning</h3>
-                <div className="flex flex-wrap gap-2">
-                  {['AWS', 'Docker', 'GraphQL', 'Machine Learning'].map((tech) => (
-                    <span 
-                      key={tech} 
-                      className={`px-2 py-1 sm:px-3 sm:py-1.5 rounded-full text-xs sm:text-sm font-medium transition-colors duration-300 ${
-                        isDarkMode ? 'bg-gray-800/80 text-blue-400' : 'bg-white/80 text-blue-700'
-                      }`}
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
+             
             </div>
           </div>
         </div>
