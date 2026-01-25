@@ -9,7 +9,6 @@ import {
   ChevronLeft, ChevronRight as ChevronRightIcon
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 
 type ProjectDetailProps = {
   project: {
@@ -30,44 +29,43 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    // Check initial dark mode
-    const checkDarkMode = () => {
-      if (typeof window !== 'undefined') {
-        const isDark = document.documentElement.classList.contains('dark');
-        setIsDarkMode(isDark);
-      }
-    };
-    
-    checkDarkMode();
-    
-    // Listen for dark mode changes
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'class') {
-          const isDarkNow = document.documentElement.classList.contains('dark');
-          setIsDarkMode(isDarkNow);
-        }
-      });
-    });
-    
-    if (typeof window !== 'undefined') {
-      observer.observe(document.documentElement, { attributes: true });
-    }
-    
-    return () => observer.disconnect();
-  }, []);
-
-  // Apply dark mode class to html
+  // Read dark mode from localStorage and apply it
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      if (isDarkMode) {
+      const saved = localStorage.getItem('darkMode');
+      const darkMode = saved ? JSON.parse(saved) : false;
+      
+      if (darkMode) {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
+      
+      setIsDarkMode(darkMode);
     }
-  }, [isDarkMode]);
+  }, []);
+
+  // Also listen for storage changes (optional but good for multi-tab)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'darkMode') {
+        const darkMode = e.newValue ? JSON.parse(e.newValue) : false;
+        setIsDarkMode(darkMode);
+        
+        if (darkMode) {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const handleImageError = (imageUrl: string) => {
     setImageError(prev => ({ ...prev, [imageUrl]: true }));
@@ -146,6 +144,21 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
     });
   };
 
+  // Add dark mode toggle to project details page for consistency
+  const toggleDarkMode = () => {
+    const newDarkMode = !isDarkMode;
+    setIsDarkMode(newDarkMode);
+    
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    // Save to localStorage so main portfolio page knows
+    localStorage.setItem('darkMode', JSON.stringify(newDarkMode));
+  };
+
   return (
     <div className={`min-h-screen transition-colors duration-500 ${
       isDarkMode 
@@ -170,8 +183,29 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
               Back to Portfolio
             </button>
             
-            <div className="text-lg sm:text-xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-              @buildwithwinner
+            <div className="flex items-center gap-4">
+              <div className="text-lg sm:text-xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
+                @buildwithwinner
+              </div>
+              
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={toggleDarkMode}
+                className={`p-2 rounded-lg transition-colors ${
+                  isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-100 hover:bg-gray-200'
+                }`}
+                aria-label="Toggle dark mode"
+              >
+                {isDarkMode ? (
+                  <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                )}
+              </button>
             </div>
           </div>
         </div>

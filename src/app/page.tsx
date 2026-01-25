@@ -59,18 +59,32 @@ interface Project {
 }
 
 const TYPEWRITER_TEXTS = ['Full-Stack Developer', 'Python Expert', 'Django Specialist', 'Problem Solver'];
+
 const Portfolio = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  // FIXED: Correct placement of isDarkMode state - inside the component
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    // Check localStorage on initial load
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('darkMode');
+      return saved ? JSON.parse(saved) : false;
+    }
+    return false;
+  });
 
+  // FIXED: This useEffect should save to localStorage
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
+    
+    // Save to localStorage
+    localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
 
   useEffect(() => {
@@ -884,4 +898,3 @@ const TypeWriter = ({ texts }: { texts: string[] }) => {
 };
 
 export default Portfolio;
-
