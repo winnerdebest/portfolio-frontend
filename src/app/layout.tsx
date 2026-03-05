@@ -1,30 +1,18 @@
 import type { Metadata } from "next";
-import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-
-const dmSans = DM_Sans({
-  variable: "--font-body",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const jetBrainsMono = JetBrains_Mono({
-  variable: "--font-code",
-  subsets: ["latin"],
-  weight: ["400", "500"],
-});
+// Fonts will be loaded via Google Fonts <link> tags in the <head>
 
 // SEO Metadata Configuration
 export const metadata: Metadata = {
-  metadataBase: new URL('https://buildwithwinner.name.ng'), 
-  
+  metadataBase: new URL('https://buildwithwinner.name.ng'),
+
   title: {
     default: 'Winner OrluVictor | Full Stack Developer & Python Expert',
     template: '%s | Winner OrluVictor'
   },
-  
+
   description: 'Winner OrluVictor (@buildwithwinner) - Full Stack Developer specializing in Python, Django, React, and Next.js. Building scalable web applications and delivering exceptional digital experiences in Rivers State, Nigeria.',
-  
+
   keywords: [
     'Winner OrluVictor',
     'buildwithwinner',
@@ -55,13 +43,13 @@ export const metadata: Metadata = {
   authors: [{ name: 'Winner OrluVictor', url: 'https://buildwithwinner.name.ng' }],
   creator: 'Winner OrluVictor',
   publisher: 'Winner OrluVictor',
-  
+
   formatDetection: {
     email: false,
     address: false,
     telephone: false,
   },
-  
+
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -78,7 +66,7 @@ export const metadata: Metadata = {
       }
     ],
   },
-  
+
   twitter: {
     card: 'summary_large_image',
     title: 'Winner OrluVictor | Full Stack Developer',
@@ -86,7 +74,7 @@ export const metadata: Metadata = {
     creator: '@buildwithwinner',
     images: ['https://res.cloudinary.com/dvlfnmxxw/image/upload/v1757463768/1749113539780_adejvm.jpg'],
   },
-  
+
   robots: {
     index: true,
     follow: true,
@@ -98,7 +86,7 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  
+
   verification: {
     google: 'RA76_p9_RveWlebBRkmL6hjPT2nhW-vwgLP08cpb0-o',
   },
@@ -112,11 +100,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Syne — loaded via Google Fonts link since next/font doesn't support variable Syne well */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Syne:wght@400..800&display=swap"
           rel="stylesheet"
         />
 
@@ -186,7 +173,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${dmSans.variable} ${jetBrainsMono.variable} antialiased`}
+        className="antialiased"
         style={{ fontFamily: 'var(--font-body), system-ui, sans-serif' }}
       >
         {children}

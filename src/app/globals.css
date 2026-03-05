@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* Color palette */
+  /* Color palette - Strict Light Mode */
   --bg-primary: #FFFFFF;
   --bg-warm: #F5F4F0;
   --text-heading: #0D0D0D;
@@ -10,14 +10,15 @@
   --accent-action: #E8651A;
   --border-light: #E8E8E4;
 
-  /* Fonts - set by next/font in layout.tsx */
-  --background: #ffffff;
-  --foreground: #0D0D0D;
+  /* Fonts */
+  --font-heading: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-code: 'JetBrains Mono', monospace;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-heading);
   --font-sans: var(--font-body);
   --font-mono: var(--font-code);
 }
@@ -26,23 +27,22 @@
 body {
   background: var(--bg-primary);
   color: var(--text-body);
-  font-family: var(--font-body), system-ui, sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading), system-ui, sans-serif;
+  font-family: var(--font-heading);
   color: var(--text-heading);
 }
 
-/* ── Dot Grid Pattern ─────────────────────────── */
+/* ── Utilities ────────────────────────────────── */
 .dot-grid {
-  background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
-  background-size: 24px 24px;
+  background-image: radial-gradient(circle, #E0E0E0 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
-/* ── Multi-layer Card Shadows ─────────────────── */
 .card-shadow {
   box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.08);
 }
@@ -51,16 +51,14 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.12);
 }
 
+.font-heading { font-family: var(--font-heading); }
+.font-body { font-family: var(--font-body); }
+.font-code { font-family: var(--font-code); }
+
 /* ── Keyframe Animations ──────────────────────── */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes cursor-blink {
@@ -233,57 +231,13 @@ h1, h2, h3, h4, h5, h6 {
   animation: slideDown 0.3s ease-out;
 }
 
-/* ── Hero image treatment ─────────────────────── */
-.hero-image {
-  position: absolute;
-  right: -20px;
-  left: auto;
-  bottom: 0;
-  transform: translateX(-120px);
-  height: 92vh;
-  width: auto;
-  z-index: 1;
-  object-fit: contain;
-  object-position: bottom right;
-  filter: drop-shadow(-12px 0px 32px rgba(0,0,0,0.10));
-  pointer-events: none;
-  background: transparent;
-}
-
-.hero-text {
-  position: relative;
-  z-index: 2;
-  width: 60%;
-  padding-top: 120px;
-}
-
-/* ── Typewriter fix ───────────────────────────── */
+/* ── Typewriter container ────────────────────── */
 .typewriter-container {
   min-width: 400px;
   width: fit-content;
   white-space: nowrap;
   overflow: visible;
   display: inline-block;
-}
-
-@media (max-width: 768px) {
-  .hero-text {
-    width: 100%;
-    padding-top: 0;
-  }
-  .hero-image {
-    position: relative;
-    display: block;
-    width: 100%;
-    height: 320px;
-    object-fit: cover;
-    object-position: top center;
-    z-index: 1;
-    margin-top: 32px;
-    filter: none;
-    right: auto;
-    bottom: auto;
-  }
 }
 
 /* ── Timeline styles ──────────────────────────── */
