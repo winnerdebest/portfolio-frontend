@@ -2,13 +2,127 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { 
-  ArrowLeft, ExternalLink, Github, Globe, X, 
-  Code, ChevronRight, ArrowUpRight,
-  CheckCircle, Layers, Zap, Calendar,
-  ChevronLeft, ChevronRight as ChevronRightIcon
+import {
+  ArrowLeft, ExternalLink, Github, Globe,
+  X, Code, Layers, Zap, Calendar, CheckCircle,
+  ChevronLeft, ChevronRight, ArrowUpRight
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+
+    .tech-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 16px;
+      border: 1.5px solid #0D0D0D;
+      border-radius: 100px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0D0D0D;
+      background: #fff;
+      transition: all 0.18s ease;
+      cursor: default;
+    }
+    .tech-chip:hover {
+      background: #0D0D0D;
+      color: #fff;
+    }
+
+    .proj-card {
+      background: #fff;
+      border: 1px solid #E8E8E4;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05), 0 8px 32px rgba(0,0,0,0.06);
+      transition: box-shadow 0.2s ease;
+    }
+    .proj-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.10);
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid #F0F0EC;
+    }
+    .detail-row:last-child { border-bottom: none; }
+
+    .detail-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #F5F4F0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Thumbnail active */
+    .thumb-active { border-color: #E8651A !important; }
+
+    /* Image modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    /* Description prose */
+    .prose-project h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0D0D0D;
+      margin: 1.5rem 0 0.75rem;
+    }
+    .prose-project p {
+      color: #555;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+      font-size: 15px;
+    }
+    .prose-project ul { margin-bottom: 1rem; }
+    .prose-project li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      color: #555;
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 8px;
+    }
+    .prose-project li::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #E8651A;
+      flex-shrink: 0;
+      margin-top: 8px;
+    }
+  `;
+  if (!document.querySelector('style[data-proj="detail"]')) {
+    style.setAttribute('data-proj', 'detail');
+    document.head.appendChild(style);
+  }
+}
 
 type ProjectDetailProps = {
   project: {
@@ -24,335 +138,171 @@ type ProjectDetailProps = {
 
 export default function ProjectDetail({ project }: ProjectDetailProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [imageError, setImageError] = useState<{ [key: string]: boolean }>({});
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
+  const [imageError, setImageError] = useState<{ [k: string]: boolean }>({});
+  const [scrolled, setScrolled] = useState(false);
   const router = useRouter();
 
-  // Read dark mode from localStorage and apply it
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('darkMode');
-      const darkMode = saved ? JSON.parse(saved) : false;
-      
-      if (darkMode) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-      
-      setIsDarkMode(darkMode);
-    }
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Also listen for storage changes (optional but good for multi-tab)
-  useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'darkMode') {
-        const darkMode = e.newValue ? JSON.parse(e.newValue) : false;
-        setIsDarkMode(darkMode);
-        
-        if (darkMode) {
-          document.documentElement.classList.add('dark');
-        } else {
-          document.documentElement.classList.remove('dark');
-        }
-      }
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
+  const handleImageError = (url: string) =>
+    setImageError(prev => ({ ...prev, [url]: true }));
 
-  const handleImageError = (imageUrl: string) => {
-    setImageError(prev => ({ ...prev, [imageUrl]: true }));
-  };
+  const nextImage = () =>
+    setCurrentImageIdx(p => (p === project.images.length - 1 ? 0 : p + 1));
+  const prevImage = () =>
+    setCurrentImageIdx(p => (p === 0 ? project.images.length - 1 : p - 1));
 
-  const nextImage = () => {
-    if (project.images && project.images.length > 0) {
-      setCurrentImageIndex((prev) => 
-        prev === project.images.length - 1 ? 0 : prev + 1
-      );
-    }
-  };
-
-  const prevImage = () => {
-    if (project.images && project.images.length > 0) {
-      setCurrentImageIndex((prev) => 
-        prev === 0 ? project.images.length - 1 : prev - 1
-      );
-    }
-  };
-
-  const parseDescription = (description: string) => {
-    const sections = description.split('\n\n');
-    return sections.map((section, index) => {
-      if (section.startsWith('## ')) {
+  const parseDescription = (desc: string) =>
+    desc.split('\n\n').map((block, i) => {
+      if (block.startsWith('## ') || block.startsWith('### '))
+        return <h3 key={i}>{block.replace(/^#{2,3}\s/, '')}</h3>;
+      if (block.startsWith('- ') || block.startsWith('• ')) {
         return (
-          <h3 
-            key={index} 
-            className={`text-xl sm:text-2xl font-bold mb-4 mt-6 ${
-              isDarkMode ? 'text-gray-100' : 'text-gray-900'
-            }`}
-          >
-            {section.replace('## ', '')}
-          </h3>
-        );
-      } else if (section.startsWith('### ')) {
-        return (
-          <h4 
-            key={index} 
-            className={`text-lg font-semibold mb-3 mt-4 ${
-              isDarkMode ? 'text-gray-200' : 'text-gray-800'
-            }`}
-          >
-            {section.replace('### ', '')}
-          </h4>
-        );
-      } else if (section.startsWith('- ') || section.startsWith('• ')) {
-        const items = section.split('\n').filter(item => item.trim());
-        return (
-          <ul key={index} className="space-y-2 mb-4">
-            {items.map((item, i) => (
-              <li 
-                key={i} 
-                className={`flex items-start gap-3 ${
-                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
-                }`}
-              >
-                <div className="w-1.5 h-1.5 rounded-full bg-violet-400 mt-2 flex-shrink-0" />
-                {item.replace(/^[-•]\s*/, '')}
-              </li>
+          <ul key={i}>
+            {block.split('\n').filter(Boolean).map((line, j) => (
+              <li key={j}>{line.replace(/^[-•]\s*/, '')}</li>
             ))}
           </ul>
         );
-      } else {
-        return (
-          <p 
-            key={index} 
-            className={`mb-4 leading-relaxed ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}
-          >
-            {section}
-          </p>
-        );
       }
+      return <p key={i}>{block}</p>;
     });
-  };
 
-  // Add dark mode toggle to project details page for consistency
-  const toggleDarkMode = () => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-    
-    if (newDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    
-    // Save to localStorage so main portfolio page knows
-    localStorage.setItem('darkMode', JSON.stringify(newDarkMode));
-  };
+  const hasImages = project.images && project.images.length > 0;
+  const currentImg = hasImages ? project.images[currentImageIdx] : null;
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${
-      isDarkMode 
-        ? 'bg-gradient-to-b from-gray-900 to-slate-900 text-gray-100' 
-        : 'bg-gradient-to-b from-gray-50 to-white text-gray-900'
-    }`}>
-      {/* Navigation Bar */}
-      <nav className={`fixed w-full z-50 transition-all duration-500 ${
-        isDarkMode
-          ? 'bg-gray-900/90 backdrop-blur-md border-b border-gray-800' 
-          : 'bg-white/90 backdrop-blur-md border-b border-gray-200'
-      }`}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+    <div className="min-h-screen bg-white text-[#444] overflow-x-hidden" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+
+      {/* ── Navbar ── */}
+      <nav className={`fixed w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-sm' : 'bg-white'
+        } border-b border-[#E8E8E4]`}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.push('/#projects')}
-              className={`inline-flex items-center gap-2 group transition-all duration-300 text-sm sm:text-base ${
-                isDarkMode ? 'text-gray-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'
-              }`}
+              className="inline-flex items-center gap-2 text-[#444] hover:text-[#0D0D0D] text-sm font-medium group transition-colors"
             >
               <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-              Back to Portfolio
+              Back to Projects
             </button>
-            
-            <div className="flex items-center gap-4">
-              <div className="text-lg sm:text-xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-                @buildwithwinner
-              </div>
-              
-              {/* Dark Mode Toggle */}
-              <button
-                onClick={toggleDarkMode}
-                className={`p-2 rounded-lg transition-colors ${
-                  isDarkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-gray-100 hover:bg-gray-200'
-                }`}
-                aria-label="Toggle dark mode"
-              >
-                {isDarkMode ? (
-                  <svg className="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                ) : (
-                  <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                  </svg>
-                )}
-              </button>
+
+            <div className="flex items-baseline gap-2">
+              <span style={{ fontFamily: "'Syne', sans-serif" }}
+                className="text-xl font-black text-[#0D0D0D]">W.</span>
+              <span className="text-xs text-[#888] font-medium">@buildwithwinner</span>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Hero Section */}
-      <div className={`relative pt-20 pb-12 sm:pt-24 sm:pb-16 px-4 sm:px-6 lg:px-8 ${
-        isDarkMode ? 'bg-gray-900' : 'bg-white'
-      }`}>
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-8">
-            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-6 ${
-              isDarkMode 
-                ? 'bg-violet-900/30 text-violet-400 border border-violet-800/50' 
-                : 'bg-violet-50 text-violet-700 border border-violet-200'
-            }`}>
-              <div className="w-1.5 h-1.5 bg-violet-500 rounded-full animate-pulse" />
-              <span className="text-xs sm:text-sm font-medium">
-                Featured Project
-              </span>
-            </div>
+      {/* ── Hero ── */}
+      <div className="pt-24 pb-12 sm:pt-28 sm:pb-16 px-4 sm:px-6 lg:px-8 border-b border-[#E8E8E4] bg-white">
+        <div className="max-w-6xl mx-auto fade-in">
 
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent">
-                {project.name}
-              </span>
-            </h1>
-            
-            <p className={`text-lg sm:text-xl max-w-3xl leading-relaxed ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-600'
-            }`}>
-              {project.short_description}
-            </p>
+          {/* Label */}
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-[#E8E8E4] rounded-full mb-6">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#E8651A] animate-pulse" />
+            <span className="text-xs font-mono text-[#888] tracking-widest uppercase"
+              style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              Featured Project
+            </span>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            <a
-              href={project.project_link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group px-6 sm:px-8 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-300 hover:scale-[1.02] flex items-center justify-center gap-2 sm:gap-3"
-            >
-              <ExternalLink className="w-5 h-5" />
-              <span>View Live Project</span>
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-            </a>
-            
-            <button
-              onClick={() => window.history.back()}
-              className={`px-6 sm:px-8 py-3 border rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 sm:gap-3 ${
-                isDarkMode 
-                  ? 'border-gray-700 text-gray-300 hover:bg-gray-800' 
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-100'
-              }`}
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span>Back to Projects</span>
-            </button>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+            <div className="flex-1">
+              <h1 style={{ fontFamily: "'Syne', sans-serif", fontSize: 'clamp(2.5rem, 6vw, 5rem)', lineHeight: 0.95, letterSpacing: '-0.03em' }}
+                className="font-black text-[#0D0D0D] uppercase mb-6">
+                {project.name}
+              </h1>
+              <p className="text-lg text-[#666] max-w-2xl leading-relaxed">
+                {project.short_description}
+              </p>
+            </div>
+
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-3 flex-shrink-0">
+              <a href={project.project_link} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#E8651A] text-white font-semibold rounded-lg hover:bg-[#d45a16] transition-colors">
+                <ExternalLink className="w-4 h-4" />
+                View Live Project
+              </a>
+              <button onClick={() => router.push('/#projects')}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-[#0D0D0D] text-[#0D0D0D] font-semibold rounded-lg hover:bg-[#F5F4F0] transition-colors">
+                <ArrowLeft className="w-4 h-4" />
+                All Projects
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-        {/* Main Image Display */}
-        {project.images && project.images.length > 0 && (
-          <div className="mb-8 sm:mb-12">
-            <div className="relative rounded-xl overflow-hidden shadow-lg border border-gray-200 dark:border-gray-800">
-              {!imageError[project.images[currentImageIndex]?.image] ? (
+      {/* ── Main Content ── */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+
+        {/* Image Gallery */}
+        {hasImages && (
+          <div className="mb-12 sm:mb-16 fade-in">
+            <div className="relative rounded-2xl overflow-hidden border border-[#E8E8E4]"
+              style={{ boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}>
+              {!imageError[currentImg!.image] ? (
                 <div className="relative aspect-video sm:aspect-[21/9]">
                   <img
-                    src={project.images[currentImageIndex].image}
-                    alt={`${project.name} - View ${currentImageIndex + 1}`}
-                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 cursor-zoom-in"
-                    onClick={() => setSelectedImage(project.images[currentImageIndex].image)}
-                    onError={() => handleImageError(project.images[currentImageIndex].image)}
+                    src={currentImg!.image}
+                    alt={`${project.name} screenshot ${currentImageIdx + 1}`}
+                    className="w-full h-full object-cover cursor-zoom-in hover:scale-[1.02] transition-transform duration-700"
+                    onClick={() => setSelectedImage(currentImg!.image)}
+                    onError={() => handleImageError(currentImg!.image)}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                  
-                  {/* Navigation Arrows */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent pointer-events-none" />
+
                   {project.images.length > 1 && (
                     <>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          prevImage();
-                        }}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all"
-                      >
+                      <button onClick={prevImage}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 border border-[#E8E8E4] text-[#0D0D0D] flex items-center justify-center hover:bg-white transition-all shadow-md">
                         <ChevronLeft className="w-5 h-5" />
                       </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          nextImage();
-                        }}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all"
-                      >
-                        <ChevronRightIcon className="w-5 h-5" />
+                      <button onClick={nextImage}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 border border-[#E8E8E4] text-[#0D0D0D] flex items-center justify-center hover:bg-white transition-all shadow-md">
+                        <ChevronRight className="w-5 h-5" />
                       </button>
                     </>
                   )}
-                  
-                  {/* Image Counter */}
-                  <div className="absolute bottom-4 right-4 bg-black/60 text-white text-sm px-3 py-1.5 rounded-full">
-                    {currentImageIndex + 1} / {project.images.length}
+
+                  <div className="absolute bottom-4 right-4 bg-white/90 border border-[#E8E8E4] text-[#0D0D0D] text-xs px-3 py-1.5 rounded-full font-mono"
+                    style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                    {currentImageIdx + 1} / {project.images.length}
                   </div>
                 </div>
               ) : (
-                <div className={`aspect-video sm:aspect-[21/9] flex items-center justify-center ${
-                  isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
-                }`}>
+                <div className="aspect-video sm:aspect-[21/9] bg-[#F5F4F0] flex items-center justify-center">
                   <div className="text-center">
-                    <Globe className="w-12 h-12 mx-auto mb-2 text-gray-400" />
-                    <p className="text-gray-500">Image unavailable</p>
+                    <Globe className="w-10 h-10 mx-auto mb-2 text-[#BBB]" />
+                    <p className="text-[#999] text-sm">Image unavailable</p>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Thumbnail Gallery */}
+            {/* Thumbnails */}
             {project.images.length > 1 && (
-              <div className="flex gap-3 mt-4 overflow-x-auto pb-2">
-                {project.images.map((img, index) => (
-                  <button
-                    key={img.id}
-                    onClick={() => setCurrentImageIndex(index)}
-                    className={`flex-shrink-0 w-20 h-20 sm:w-24 sm:h-16 rounded-lg overflow-hidden border-2 transition-all ${
-                      currentImageIndex === index
-                        ? 'border-violet-500 ring-2 ring-violet-500/30'
-                        : 'border-transparent opacity-70 hover:opacity-100'
-                    }`}
-                  >
-                    {!imageError[img.image] ? (
-                      <img
-                        src={img.image}
-                        alt={`Thumbnail ${index + 1}`}
-                        className="w-full h-full object-cover"
-                        onError={() => handleImageError(img.image)}
-                      />
-                    ) : (
-                      <div className={`w-full h-full flex items-center justify-center ${
-                        isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
+              <div className="flex gap-3 mt-4 overflow-x-auto pb-1">
+                {project.images.map((img, idx) => (
+                  <button key={img.id} onClick={() => setCurrentImageIdx(idx)}
+                    className={`flex-shrink-0 w-20 h-14 sm:w-24 sm:h-16 rounded-lg overflow-hidden border-2 transition-all ${idx === currentImageIdx ? 'thumb-active' : 'border-[#E8E8E4] opacity-60 hover:opacity-100'
                       }`}>
-                        <Globe className="w-5 h-5 text-gray-400" />
+                    {!imageError[img.image]
+                      ? <img src={img.image} alt={`thumb ${idx + 1}`} className="w-full h-full object-cover"
+                        onError={() => handleImageError(img.image)} />
+                      : <div className="w-full h-full bg-[#F5F4F0] flex items-center justify-center">
+                        <Globe className="w-4 h-4 text-[#BBB]" />
                       </div>
-                    )}
+                    }
                   </button>
                 ))}
               </div>
@@ -360,247 +310,176 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Left Column - Project Details */}
+        {/* Two-column layout */}
+        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
+
+          {/* Left — Overview + Stack */}
           <div className="lg:col-span-2 space-y-8">
+
             {/* Project Overview */}
-            <div className={`p-6 rounded-xl border ${
-              isDarkMode 
-                ? 'bg-gray-800/50 border-gray-700' 
-                : 'bg-white border-gray-200'
-            }`}>
-              <h2 className={`text-2xl font-bold mb-6 flex items-center gap-3 ${
-                isDarkMode ? 'text-gray-100' : 'text-gray-900'
-              }`}>
-                <Code className="w-6 h-6 text-violet-500" />
+            <div className="proj-card p-6 sm:p-8">
+              <h2 style={{ fontFamily: "'Syne', sans-serif" }}
+                className="text-2xl font-bold text-[#0D0D0D] mb-1 flex items-center gap-3">
+                <Code className="w-5 h-5 text-[#E8651A]" />
                 Project Overview
               </h2>
-              
-              <div className="space-y-4">
+              <div className="w-12 h-0.5 bg-[#E8651A] mb-6" />
+              <div className="prose-project">
                 {parseDescription(project.description)}
               </div>
             </div>
 
-            {/* Technology Stack */}
-            <div className={`p-6 rounded-xl border ${
-              isDarkMode 
-                ? 'bg-gray-800/50 border-gray-700' 
-                : 'bg-white border-gray-200'
-            }`}>
-              <h2 className={`text-2xl font-bold mb-6 flex items-center gap-3 ${
-                isDarkMode ? 'text-gray-100' : 'text-gray-900'
-              }`}>
-                <Layers className="w-6 h-6 text-violet-500" />
+            {/* Tech Stack */}
+            <div className="proj-card p-6 sm:p-8">
+              <h2 style={{ fontFamily: "'Syne', sans-serif" }}
+                className="text-2xl font-bold text-[#0D0D0D] mb-1 flex items-center gap-3">
+                <Layers className="w-5 h-5 text-[#E8651A]" />
                 Technology Stack
               </h2>
-              
+              <div className="w-12 h-0.5 bg-[#E8651A] mb-6" />
               <div className="flex flex-wrap gap-3">
-                {project.technologies.map((tech) => (
-                  <span
-                    key={tech}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all hover:scale-105 ${
-                      isDarkMode 
-                        ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    {tech}
-                  </span>
+                {project.technologies.map(tech => (
+                  <span key={tech} className="tech-chip">{tech}</span>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Right Column - Sidebar */}
+          {/* Right — Sidebar */}
           <div className="space-y-6">
-            {/* Project Info Card */}
-            <div className={`p-6 rounded-xl border ${
-              isDarkMode 
-                ? 'bg-gray-800/50 border-gray-700' 
-                : 'bg-white border-gray-200'
-            }`}>
-              <h3 className={`text-xl font-bold mb-4 ${
-                isDarkMode ? 'text-gray-100' : 'text-gray-900'
-              }`}>
+
+            {/* Project Details */}
+            <div className="proj-card p-6">
+              <h3 style={{ fontFamily: "'Syne', sans-serif" }}
+                className="text-lg font-bold text-[#0D0D0D] mb-4">
                 Project Details
               </h3>
-              
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-violet-500/10 flex items-center justify-center">
-                    <CheckCircle className="w-5 h-5 text-violet-500" />
+              <div>
+                {[
+                  { icon: <CheckCircle className="w-4 h-4 text-[#E8651A]" />, label: 'Status', value: 'Live & Active' },
+                  { icon: <Zap className="w-4 h-4 text-[#E8651A]" />, label: 'Performance', value: 'Optimized' },
+                  { icon: <Calendar className="w-4 h-4 text-[#E8651A]" />, label: 'Last Updated', value: 'Recently' },
+                ].map(d => (
+                  <div key={d.label} className="detail-row">
+                    <div className="detail-icon">{d.icon}</div>
+                    <div>
+                      <div className="text-xs text-[#999] mb-0.5"
+                        style={{ fontFamily: "'JetBrains Mono', monospace", letterSpacing: '0.05em' }}>
+                        {d.label.toUpperCase()}
+                      </div>
+                      <div className="text-sm font-semibold text-[#0D0D0D]">{d.value}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Status</div>
-                    <div className={`font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>Live & Active</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                    <Zap className="w-5 h-5 text-blue-500" />
-                  </div>
-                  <div>
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Performance</div>
-                    <div className={`font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>Optimized</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-green-500" />
-                  </div>
-                  <div>
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Last Updated</div>
-                    <div className={`font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-900'}`}>Recently</div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
             {/* CTA Card */}
-            <div className={`p-6 rounded-xl border ${
-              isDarkMode 
-                ? 'bg-gray-800/50 border-gray-700' 
-                : 'bg-white border-gray-200'
-            }`}>
-              <h3 className={`text-xl font-bold mb-4 ${
-                isDarkMode ? 'text-gray-100' : 'text-gray-900'
-              }`}>
+            <div className="proj-card p-6 border-t-4 border-t-[#E8651A]">
+              <h3 style={{ fontFamily: "'Syne', sans-serif" }}
+                className="text-lg font-bold text-[#0D0D0D] mb-2">
                 Like what you see?
               </h3>
-              
-              <p className={`mb-6 text-sm ${
-                isDarkMode ? 'text-gray-400' : 'text-gray-600'
-              }`}>
+              <p className="text-sm text-[#666] mb-5 leading-relaxed">
                 Let's discuss how we can build something amazing together.
               </p>
-              
-              <a
-                href="/#contact"
-                className="block w-full text-center px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105"
-              >
+              <a href="/#contact"
+                className="block w-full text-center px-5 py-3 bg-[#1A1A2E] text-white font-semibold rounded-lg hover:bg-[#E8651A] transition-colors text-sm">
                 Start a Project
               </a>
+            </div>
+
+            {/* Quick Links */}
+            <div className="proj-card p-6">
+              <h3 style={{ fontFamily: "'Syne', sans-serif" }}
+                className="text-lg font-bold text-[#0D0D0D] mb-4">
+                Quick Links
+              </h3>
+              <div className="space-y-3">
+                <a href={project.project_link} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center justify-between p-3 rounded-lg border border-[#E8E8E4] hover:border-[#E8651A] hover:text-[#E8651A] transition-all group text-sm font-medium text-[#0D0D0D]">
+                  <div className="flex items-center gap-2">
+                    <ExternalLink className="w-4 h-4" />
+                    Live Project
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="/#contact"
+                  className="flex items-center justify-between p-3 rounded-lg border border-[#E8E8E4] hover:border-[#E8651A] hover:text-[#E8651A] transition-all group text-sm font-medium text-[#0D0D0D]">
+                  <div className="flex items-center gap-2">
+                    <Code className="w-4 h-4" />
+                    Hire Winner
+                  </div>
+                  <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Bottom CTA */}
-        <div className={`mt-12 p-8 rounded-xl border ${
-          isDarkMode 
-            ? 'bg-gray-800/30 border-gray-700' 
-            : 'bg-gray-50 border-gray-200'
-        }`}>
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div>
-              <h3 className={`text-2xl font-bold mb-2 ${
-                isDarkMode ? 'text-gray-100' : 'text-gray-900'
-              }`}>
-                Ready to build something amazing?
-              </h3>
-              <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
-                Let's collaborate on your next project.
-              </p>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4">
-              <a
-                href={project.project_link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
-              >
-                <ExternalLink className="w-5 h-5" />
-                Visit Project
-              </a>
-              
-              <a
-                href="/#contact"
-                className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
-                  isDarkMode 
-                    ? 'border border-gray-700 text-gray-300 hover:bg-gray-800' 
-                    : 'border border-gray-300 text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                Contact Me
-              </a>
-            </div>
+        {/* Bottom CTA Strip */}
+        <div className="mt-16 p-8 sm:p-12 rounded-2xl bg-[#0D0D0D] text-white flex flex-col lg:flex-row items-center justify-between gap-8">
+          <div>
+            <p className="text-xs font-mono text-[#E8651A] tracking-widest uppercase mb-3"
+              style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              Ready to collaborate?
+            </p>
+            <h3 style={{ fontFamily: "'Syne', sans-serif" }}
+              className="text-2xl sm:text-3xl font-black leading-tight mb-2">
+              Got a project?<br />Let's build something.
+            </h3>
+            <p className="text-[#888] text-sm">Rivers State, Nigeria — working with clients globally</p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-4 flex-shrink-0">
+            <a href={project.project_link} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#E8651A] text-white font-semibold rounded-lg hover:bg-[#d45a16] transition-colors">
+              <ExternalLink className="w-4 h-4" />
+              Visit Project
+            </a>
+            <a href="/#contact"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 border border-white/20 text-white font-semibold rounded-lg hover:bg-white/10 transition-colors">
+              Contact Me
+            </a>
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className={`py-8 px-4 sm:px-6 lg:px-8 border-t ${
-        isDarkMode ? 'border-gray-800 bg-gray-900' : 'border-gray-200 bg-white'
-      }`}>
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="text-center md:text-left">
-              <div className="text-xl font-bold bg-gradient-to-r from-violet-600 to-purple-600 bg-clip-text text-transparent mb-1">
-                @buildwithwinner
-              </div>
-              <p className={`text-sm ${isDarkMode ? 'text-gray-500' : 'text-gray-600'}`}>
-                © {new Date().getFullYear()} @buildwithwinner. All rights reserved.
-              </p>
-            </div>
-            
-            <div className="flex gap-4 text-sm">
-              <a href="/" className={isDarkMode ? 'text-gray-400 hover:text-violet-400' : 'text-gray-600 hover:text-violet-600'}>
-                Portfolio
-              </a>
-              <a href="/#contact" className={isDarkMode ? 'text-gray-400 hover:text-violet-400' : 'text-gray-600 hover:text-violet-600'}>
-                Contact
-              </a>
-            </div>
+      {/* ── Footer ── */}
+      <footer className="py-8 px-4 sm:px-6 lg:px-8 border-t border-[#E8E8E4] bg-white">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex items-baseline gap-2">
+            <span style={{ fontFamily: "'Syne', sans-serif" }}
+              className="text-xl font-black text-[#0D0D0D]">W.</span>
+            <span className="text-sm text-[#888]">@buildwithwinner</span>
+          </div>
+          <p className="text-sm text-[#999]">© {new Date().getFullYear()} @buildwithwinner. All rights reserved.</p>
+          <div className="flex gap-6 text-sm">
+            <a href="/" className="text-[#666] hover:text-[#E8651A] transition-colors">Portfolio</a>
+            <a href="/#contact" className="text-[#666] hover:text-[#E8651A] transition-colors">Contact</a>
           </div>
         </div>
       </footer>
 
-      {/* Image Modal */}
+      {/* ── Image Modal ── */}
       {selectedImage && (
-        <div
-          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
-          onClick={() => setSelectedImage(null)}
-        >
-          <button
-            onClick={() => setSelectedImage(null)}
-            className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors"
-            aria-label="Close modal"
-          >
-            <X className="w-8 h-8" />
+        <div className="modal-overlay" onClick={() => setSelectedImage(null)}>
+          <button onClick={() => setSelectedImage(null)}
+            className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+            <X className="w-5 h-5" />
           </button>
-          
-          <div className="relative w-full max-w-4xl max-h-[90vh]">
-            <img
-              src={selectedImage}
-              alt="Enlarged view"
-              className="w-full h-full object-contain rounded-lg"
-              onClick={(e) => e.stopPropagation()}
-            />
-            
-            {/* Navigation in Modal */}
-            {project.images && project.images.length > 1 && (
+          <div className="relative w-full max-w-5xl max-h-[88vh]"
+            onClick={e => e.stopPropagation()}>
+            <img src={selectedImage} alt="Enlarged"
+              className="w-full h-full object-contain rounded-xl" />
+            {project.images.length > 1 && (
               <>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    prevImage();
-                    setSelectedImage(project.images[currentImageIndex].image);
-                  }}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all"
-                >
-                  <ChevronLeft className="w-6 h-6" />
+                <button onClick={() => { prevImage(); setSelectedImage(project.images[currentImageIdx].image); }}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+                  <ChevronLeft className="w-5 h-5" />
                 </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    nextImage();
-                    setSelectedImage(project.images[currentImageIndex].image);
-                  }}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center transition-all"
-                >
-                  <ChevronRightIcon className="w-6 h-6" />
+                <button onClick={() => { nextImage(); setSelectedImage(project.images[currentImageIdx].image); }}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors">
+                  <ChevronRight className="w-5 h-5" />
                 </button>
               </>
             )}
@@ -608,16 +487,10 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
         </div>
       )}
 
-      {/* Back to Top Button */}
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className={`fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 ${
-          isDarkMode 
-            ? 'bg-violet-700 text-white' 
-            : 'bg-violet-600 text-white'
-        }`}
-      >
-        <ArrowUpRight className="w-5 h-5 rotate-90" />
+      {/* ── Back to Top ── */}
+      <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-[#1A1A2E] text-white flex items-center justify-center shadow-lg hover:bg-[#E8651A] hover:-translate-y-1 transition-all duration-300">
+        <ArrowUpRight className="w-5 h-5 -rotate-45" />
       </button>
     </div>
   );

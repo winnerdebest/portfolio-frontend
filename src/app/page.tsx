@@ -1,11 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import emailjs from '@emailjs/browser';
 import {
   Menu, X, Github, Linkedin, Mail, MapPin, Phone,
   ArrowRight, Palette, Terminal, MessageSquare, Users
 } from 'lucide-react';
 import ClientProjectsSection from "@/components/ProjectsSection";
+
+const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_xxxxxxx';
+const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_xxxxxxx';
+const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'aBcDeFgHiJ123456';
 
 if (typeof document !== 'undefined') {
   const style = document.createElement('style');
@@ -200,6 +205,33 @@ const Portfolio = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const formRef = useRef<HTMLFormElement>(null);
+  const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [formError, setFormError] = useState('');
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formRef.current) return;
+
+    setFormStatus('loading');
+    setFormError('');
+
+    try {
+      await emailjs.sendForm(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        formRef.current,
+        EMAILJS_PUBLIC_KEY
+      );
+      setFormStatus('success');
+      formRef.current.reset();
+    } catch (err) {
+      console.error(err);
+      setFormStatus('error');
+      setFormError('Failed to send. Please email me directly at winnerbrown9@gmail.com');
+    }
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -226,7 +258,7 @@ const Portfolio = () => {
 
       {/* ── Navbar ── */}
       <nav className={`fixed w-full z-40 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-[#E8E8E4]'
-          : 'bg-white border-b border-[#E8E8E4]'
+        : 'bg-white border-b border-[#E8E8E4]'
         }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
@@ -262,8 +294,8 @@ const Portfolio = () => {
               {['home', 'about', 'skills', 'projects', 'experience', 'contact'].map(item => (
                 <button key={item} onClick={() => scrollToSection(item)}
                   className={`text-left capitalize px-4 py-3 rounded-md transition-colors text-base ${activeSection === item
-                      ? 'bg-[#F5F4F0] text-[#1A1A2E] font-medium border-l-2 border-[#E8651A]'
-                      : 'text-[#444] hover:bg-gray-50'
+                    ? 'bg-[#F5F4F0] text-[#1A1A2E] font-medium border-l-2 border-[#E8651A]'
+                    : 'text-[#444] hover:bg-gray-50'
                     }`}>
                   {item}
                 </button>
@@ -410,7 +442,7 @@ const Portfolio = () => {
           <span className="section-label">02 — EXPERTISE</span>
           {/* BIGGER heading */}
           <h2 className="font-heading font-black text-[#0D0D0D] leading-tight"
-            style={{ fontSize: 'clamp(48px, 8vw, 96px)', letterSpacing: '-0.03em' }}>
+            style={{ fontSize: 'clamp(36px, 6vw, 72px)', letterSpacing: '-0.03em' }}>
             Technologies I work with
           </h2>
         </div>
@@ -454,8 +486,8 @@ const Portfolio = () => {
                 <div key={index} className="relative group">
                   {/* Dot */}
                   <div className={`absolute -left-[35px] md:-left-[43px] top-7 w-5 h-5 rounded-full bg-white border-2 z-10 transition-all duration-300 group-hover:scale-110 ${exp.current
-                      ? 'border-[#E8651A] shadow-[0_0_0_4px_rgba(232,101,26,0.15)]'
-                      : 'border-[#D0D0D0] group-hover:border-[#E8651A]'
+                    ? 'border-[#E8651A] shadow-[0_0_0_4px_rgba(232,101,26,0.15)]'
+                    : 'border-[#D0D0D0] group-hover:border-[#E8651A]'
                     }`}>
                     {exp.current && (
                       <span className="absolute inset-[3px] rounded-full bg-[#E8651A] animate-pulse" />
@@ -564,28 +596,57 @@ const Portfolio = () => {
             </div>
 
             <div className="w-full lg:w-2/3">
-              <form className="bg-white p-6 md:p-8 rounded-xl border border-[#E8E8E4] card-shadow space-y-6">
+              <form ref={formRef} onSubmit={handleContactSubmit} className="bg-white p-6 md:p-8 rounded-xl border border-[#E8E8E4] card-shadow space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="floating-label-group">
-                    <input type="text" id="name" placeholder=" " required />
+                    <input type="text" id="name" name="from_name" placeholder=" " required />
                     <label htmlFor="name">Name</label>
                   </div>
                   <div className="floating-label-group">
-                    <input type="email" id="email" placeholder=" " required />
+                    <input type="email" id="email" name="from_email" placeholder=" " required />
                     <label htmlFor="email">Email</label>
                   </div>
                 </div>
                 <div className="floating-label-group">
-                  <input type="text" id="subject" placeholder=" " required />
+                  <input type="text" id="subject" name="subject" placeholder=" " required />
                   <label htmlFor="subject">Subject</label>
                 </div>
                 <div className="floating-label-group">
-                  <textarea id="message" rows={5} placeholder=" " required></textarea>
+                  <textarea id="message" name="message" rows={5} placeholder=" " required></textarea>
                   <label htmlFor="message">Project details...</label>
                 </div>
-                <button type="submit"
-                  className="w-full sm:w-auto px-8 py-4 bg-[#1A1A2E] text-white rounded-lg font-semibold hover:bg-[#E8651A] transition-colors card-shadow">
-                  Send Message
+
+                {formStatus === 'success' && (
+                  <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <span className="text-green-600 text-lg">✅</span>
+                    <div>
+                      <p className="text-green-700 font-semibold text-sm">Message sent!</p>
+                      <p className="text-green-600 text-xs mt-0.5">I'll get back to you as soon as possible.</p>
+                    </div>
+                  </div>
+                )}
+
+                {formStatus === 'error' && (
+                  <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <span className="text-red-500 text-lg">❌</span>
+                    <p className="text-red-600 text-sm">{formError}</p>
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={formStatus === 'loading'}
+                  className="w-full sm:w-auto px-8 py-4 bg-[#1A1A2E] text-white rounded-lg font-semibold hover:bg-[#E8651A] transition-colors card-shadow disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {formStatus === 'loading' ? (
+                    <>
+                      <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      Sending...
+                    </>
+                  ) : formStatus === 'success' ? '✅ Sent!' : 'Send Message'}
                 </button>
               </form>
             </div>
