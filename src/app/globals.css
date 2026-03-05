@@ -266,6 +266,122 @@ h1, h2, h3, h4, h5, h6 {
   animation: pulse-amber 2s ease-in-out infinite;
 }
 
+/* ── Hero image and structure ─────────────────── */
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+}
+
+.hero-image {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 88vh;
+  width: auto;
+  max-width: 55vw;
+  z-index: 1;
+  object-fit: contain;
+  object-position: bottom right;
+  filter: drop-shadow(-12px 0px 32px rgba(0,0,0,0.12));
+  background: transparent;
+  mix-blend-mode: normal;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: auto;
+    padding-bottom: 0;
+  }
+  
+  .hero-image {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    object-fit: contain;
+    object-position: bottom center;
+    bottom: 0;
+    right: auto;
+    max-width: 100%;
+    filter: drop-shadow(0px -4px 16px rgba(0,0,0,0.05));
+    margin-top: -48px;
+  }
+}
+
+/* ── Skills / Expertise Section ───────────────── */
+.skills-section {
+  background: #FFFFFF;
+}
+
+.skill-card {
+  background: #FFFFFF;
+  border: 1.5px solid #0D0D0D;
+  border-radius: 12px;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  transition: all 0.2s ease;
+  box-shadow: none;
+}
+
+.skill-card:hover {
+  background: #0D0D0D;
+  border-color: #0D0D0D;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+
+.skill-card:hover .skill-name {
+  color: #FFFFFF;
+}
+
+.skill-card:hover img,
+.skill-card:hover svg,
+.skill-card:hover i {
+  filter: grayscale(100%) brightness(10);
+}
+
+.skill-card img,
+.skill-card svg,
+.skill-card i {
+  filter: grayscale(100%);
+  width: 64px;
+  height: 64px;
+  font-size: 64px; /* For devicons */
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skill-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0D0D0D;
+  transition: color 0.2s ease;
+}
+
+.skills-heading {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(40px, 6vw, 64px);
+  color: #0D0D0D;
+  text-align: left;
+  letter-spacing: -0.02em;
+}
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  color: #E8651A;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 8px;
+}
+
 /* small screen adjustments */
 @media (max-width: 767px) {
   .section-number {

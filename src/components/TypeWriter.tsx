@@ -16,22 +16,26 @@ const TypeWriter: React.FC<TypeWriterProps> = ({ texts }) => {
 
     const fullText = texts[currentIndex];
 
+    // Determine the delay based on the current state
+    let delay = isDeleting ? 50 : 100;
+    if (!isDeleting && currentText === fullText) {
+      delay = 2000; // Pause at the end of the word
+    } else if (isDeleting && currentText === '') {
+      delay = 500; // Pause before typing the next word
+    }
+
     const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        if (currentText.length < fullText.length) {
-          setCurrentText(fullText.substring(0, currentText.length + 1));
-        } else {
-          setTimeout(() => setIsDeleting(true), 2000);
-        }
-      } else {
-        if (currentText.length > 0) {
-          setCurrentText(fullText.substring(0, currentText.length - 1));
-        } else {
-          setIsDeleting(false);
-          setCurrentIndex((prev) => (prev + 1) % texts.length);
-        }
+      if (!isDeleting && currentText !== fullText) {
+        setCurrentText(fullText.substring(0, currentText.length + 1));
+      } else if (isDeleting && currentText !== '') {
+        setCurrentText(fullText.substring(0, currentText.length - 1));
+      } else if (!isDeleting && currentText === fullText) {
+        setIsDeleting(true);
+      } else if (isDeleting && currentText === '') {
+        setIsDeleting(false);
+        setCurrentIndex((prev) => (prev + 1) % texts.length);
       }
-    }, isDeleting ? 50 : 150);
+    }, delay);
 
     return () => clearTimeout(timeout);
   }, [currentText, isDeleting, currentIndex, texts]);
