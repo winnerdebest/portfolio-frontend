@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const dmSans = DM_Sans({
+  variable: "--font-body",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-code",
   subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 // SEO Metadata Configuration
@@ -17,7 +19,7 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://buildwithwinner.name.ng'), 
   
   title: {
-    default: 'buildwiithwinner | Full Stack Developer & Python Expert',
+    default: 'Winner OrluVictor | Full Stack Developer & Python Expert',
     template: '%s | Winner OrluVictor'
   },
   
@@ -97,7 +99,6 @@ export const metadata: Metadata = {
     },
   },
   
-  // Add your verification codes after setting up Google Search Console
   verification: {
     google: 'RA76_p9_RveWlebBRkmL6hjPT2nhW-vwgLP08cpb0-o',
   },
@@ -111,6 +112,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* Syne — loaded via Google Fonts link since next/font doesn't support variable Syne well */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+
+        {/* Devicons CDN for skill icons */}
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css"
+        />
+
         {/* Structured Data for SEO */}
         <script
           type="application/ld+json"
@@ -171,7 +186,8 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${dmSans.variable} ${jetBrainsMono.variable} antialiased`}
+        style={{ fontFamily: 'var(--font-body), system-ui, sans-serif' }}
       >
         {children}
       </body>

@@ -1,26 +1,321 @@
 @import "tailwindcss";
 
 :root {
+  /* Color palette */
+  --bg-primary: #FFFFFF;
+  --bg-warm: #F5F4F0;
+  --text-heading: #0D0D0D;
+  --text-body: #444444;
+  --accent-structural: #1A1A2E;
+  --accent-action: #E8651A;
+  --border-light: #E8E8E4;
+
+  /* Fonts - set by next/font in layout.tsx */
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #0D0D0D;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-mono: var(--font-code);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ── Base ─────────────────────────────────────── */
+body {
+  background: var(--bg-primary);
+  color: var(--text-body);
+  font-family: var(--font-body), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), system-ui, sans-serif;
+  color: var(--text-heading);
+}
+
+/* ── Dot Grid Pattern ─────────────────────────── */
+.dot-grid {
+  background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ── Multi-layer Card Shadows ─────────────────── */
+.card-shadow {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06), 0 8px 32px rgba(0,0,0,0.08);
+}
+
+.card-shadow-hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.12);
+}
+
+/* ── Keyframe Animations ──────────────────────── */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes pulse-amber {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(232, 101, 26, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(232, 101, 26, 0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ── Scroll Reveal ────────────────────────────── */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Cursor blink ─────────────────────────────── */
+.cursor-blink {
+  animation: cursor-blink 0.8s step-end infinite;
+}
+
+/* ── Pulse amber dot ──────────────────────────── */
+.pulse-amber {
+  animation: pulse-amber 2s ease-in-out infinite;
+}
+
+/* ── Floating Label Inputs ────────────────────── */
+.floating-label-group {
+  position: relative;
+}
+
+.floating-label-group input,
+.floating-label-group textarea {
+  width: 100%;
+  padding: 1rem 0.875rem 0.5rem;
+  border: 1px solid var(--border-light);
+  border-radius: 0.5rem;
+  font-family: var(--font-body), system-ui, sans-serif;
+  font-size: 0.9375rem;
+  color: var(--text-heading);
+  background: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+}
+
+.floating-label-group input:focus,
+.floating-label-group textarea:focus {
+  border-color: var(--accent-structural);
+  box-shadow: 0 0 0 3px rgba(26, 26, 46, 0.08);
+}
+
+.floating-label-group input.error,
+.floating-label-group textarea.error {
+  border-color: var(--accent-action);
+}
+
+.floating-label-group label {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.9375rem;
+  color: #999;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+.floating-label-group textarea ~ label {
+  top: 1rem;
+  transform: translateY(0);
+}
+
+.floating-label-group input:focus ~ label,
+.floating-label-group input:not(:placeholder-shown) ~ label,
+.floating-label-group textarea:focus ~ label,
+.floating-label-group textarea:not(:placeholder-shown) ~ label {
+  top: 0.35rem;
+  transform: translateY(0);
+  font-size: 0.7rem;
+  color: var(--accent-structural);
+  font-weight: 500;
+}
+
+.floating-label-group .error-message {
+  color: var(--accent-action);
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  font-family: var(--font-body), system-ui, sans-serif;
+}
+
+/* ── Section number decoration ────────────────── */
+.section-number {
+  font-family: var(--font-heading), system-ui, sans-serif;
+  font-size: clamp(6rem, 15vw, 12rem);
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.03);
+  position: absolute;
+  top: -1.5rem;
+  left: 0;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Navbar underline animation ───────────────── */
+.nav-link {
+  position: relative;
+  color: var(--text-body);
+  font-weight: 500;
+  transition: color 0.25s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--accent-action);
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--text-heading);
+}
+
+/* ── Mobile drawer animation ──────────────────── */
+.mobile-drawer {
+  animation: slideDown 0.3s ease-out;
+}
+
+/* ── Hero image treatment ─────────────────────── */
+.hero-image {
+  position: absolute;
+  right: -20px;
+  left: auto;
+  bottom: 0;
+  transform: translateX(-120px);
+  height: 92vh;
+  width: auto;
+  z-index: 1;
+  object-fit: contain;
+  object-position: bottom right;
+  filter: drop-shadow(-12px 0px 32px rgba(0,0,0,0.10));
+  pointer-events: none;
+  background: transparent;
+}
+
+.hero-text {
+  position: relative;
+  z-index: 2;
+  width: 60%;
+  padding-top: 120px;
+}
+
+/* ── Typewriter fix ───────────────────────────── */
+.typewriter-container {
+  min-width: 400px;
+  width: fit-content;
+  white-space: nowrap;
+  overflow: visible;
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .hero-text {
+    width: 100%;
+    padding-top: 0;
+  }
+  .hero-image {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    object-position: top center;
+    z-index: 1;
+    margin-top: 32px;
+    filter: none;
+    right: auto;
+    bottom: auto;
+  }
+}
+
+/* ── Timeline styles ──────────────────────────── */
+.timeline-line {
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border-light);
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-action);
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px var(--border-light);
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.timeline-dot.current {
+  animation: pulse-amber 2s ease-in-out infinite;
+}
+
+/* small screen adjustments */
+@media (max-width: 767px) {
+  .section-number {
+    font-size: clamp(4rem, 20vw, 6rem);
+    top: -0.5rem;
+  }
 }
