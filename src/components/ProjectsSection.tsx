@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { ArrowRight } from 'lucide-react';
 
 export type Project = {
   id: number;
@@ -14,10 +15,12 @@ export type Project = {
 
 type ClientProjectsSectionProps = {
   endpoint: string;
+  limit?: number;
 };
 
 export default function ClientProjectsSection({
   endpoint,
+  limit,
 }: ClientProjectsSectionProps) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -67,16 +70,15 @@ export default function ClientProjectsSection({
     return (
       <section
         id="projects"
-        className="py-20 md:py-28 px-4 sm:px-6 lg:px-8"
-        style={{ background: '#FFFFFF' }}
+        className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 bg-[#050505]"
       >
         <div className="max-w-6xl mx-auto">
           <div className="text-center py-16">
             <div
               className="inline-block w-10 h-10 border-3 rounded-full animate-spin"
-              style={{ borderColor: '#E8E8E4', borderTopColor: '#E8651A' }}
+              style={{ borderColor: 'rgba(255,255,255,0.06)', borderTopColor: '#FF6B00' }}
             />
-            <p className="mt-4 text-sm" style={{ color: '#999' }}>Loading projects...</p>
+            <p className="mt-4 text-sm text-[#71717A]">Loading projects...</p>
           </div>
         </div>
       </section>
@@ -87,11 +89,10 @@ export default function ClientProjectsSection({
     return (
       <section
         id="projects"
-        className="py-20 md:py-28 px-4 sm:px-6 lg:px-8"
-        style={{ background: '#FFFFFF' }}
+        className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 bg-[#050505]"
       >
         <div className="max-w-6xl mx-auto">
-          <p className="text-center py-16 text-sm" style={{ color: '#E8651A' }}>
+          <p className="text-center py-16 text-sm text-[#FF6B00]">
             Error loading projects: {error}
           </p>
         </div>
@@ -103,11 +104,10 @@ export default function ClientProjectsSection({
     return (
       <section
         id="projects"
-        className="py-20 md:py-28 px-4 sm:px-6 lg:px-8"
-        style={{ background: '#FFFFFF' }}
+        className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 bg-[#050505]"
       >
         <div className="max-w-6xl mx-auto">
-          <p className="text-center py-16 text-sm" style={{ color: '#999' }}>
+          <p className="text-center py-16 text-sm text-[#71717A]">
             No projects found.
           </p>
         </div>
@@ -118,66 +118,87 @@ export default function ClientProjectsSection({
   return (
     <section
       id="projects"
-      className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-white"
+      className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-[#050505]"
     >
       <div className="max-w-6xl mx-auto relative">
         {/* Section number decoration */}
         <div className="section-number">03</div>
 
         <div className="mb-12 md:mb-16 relative z-10 pt-4">
-          <p className="font-code uppercase tracking-widest text-[#E8651A] text-xs md:text-sm font-medium mb-3">
+          <p className="font-code uppercase tracking-widest text-[#FF6B00] text-xs md:text-sm font-medium mb-3">
             03 — Projects
           </p>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-[#0D0D0D]">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-white">
             Featured Work
           </h2>
-          <p className="mt-4 text-base md:text-lg max-w-xl text-[#444] font-body">
+          <p className="mt-4 text-base md:text-lg max-w-xl text-[#A1A1AA] font-body">
             A selection of recent projects that showcase my skills and approach
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-10 relative z-10">
-          {projects.map((project) => (
+        <div className="grid md:grid-cols-2 gap-6 lg:gap-8 relative z-10">
+          {(limit ? projects.slice(0, limit) : projects).map((project, i) => (
             <a
               key={project.id}
               href={`/projects/${project.slug}`}
-              className="group block bg-white rounded-xl overflow-hidden border border-[#E8E8E4] border-t-[3px] border-t-[#E8651A] card-shadow hover:-translate-y-2 card-shadow-hover transition-all duration-300 flex flex-col h-full"
+              style={{
+                animation: 'slideUp 0.55s ease-out both',
+                animationDelay: `${i * 120}ms`,
+              }}
+              className="group flex flex-col bg-[#111113] rounded-2xl overflow-hidden border border-white/[0.06] card-shadow hover:-translate-y-2 hover:border-[#FF6B00]/30 hover:shadow-xl hover:shadow-[#FF6B00]/[0.06] transition-all duration-300 glow-ring"
             >
-              {project.preview_image && (
-                <div className="relative h-56 sm:h-64 overflow-hidden border-b border-[#E8E8E4]">
+              {/* Image */}
+              {project.preview_image ? (
+                <div className="relative h-48 sm:h-56 overflow-hidden border-b border-white/[0.04] shrink-0">
                   <img
                     src={project.preview_image}
                     alt={project.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111113] via-transparent to-transparent opacity-60" />
+                  <div className="absolute inset-0 bg-[#FF6B00]/[0.06] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </div>
+              ) : (
+                <div className="h-48 sm:h-56 bg-[#0A0A0C] flex items-center justify-center border-b border-white/[0.04] shrink-0 relative overflow-hidden">
+                  <span className="font-heading font-black text-6xl text-[#1e1e1e] select-none">
+                    {project.name.charAt(0)}
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#FF6B00]/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
               )}
 
-              <div className="p-6 md:p-8 flex-grow flex flex-col">
-                <h3 className="text-xl sm:text-2xl font-bold font-heading text-[#0D0D0D] mb-3">
+              {/* Body */}
+              <div className="p-5 sm:p-6 flex flex-col flex-grow">
+                <h3 className="font-heading font-bold text-white text-xl mb-2 group-hover:text-[#FF6B00] transition-colors leading-snug">
                   {project.name}
                 </h3>
-                <p className="text-sm md:text-base text-[#444] font-body mb-6 leading-relaxed flex-grow">
+                <p className="text-sm text-[#71717A] leading-relaxed flex-grow line-clamp-2 mb-5">
                   {project.short_description}
                 </p>
 
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {project.technologies.map((tech) => (
+                {/* Tech tags — limited to 3 */}
+                <div className="flex flex-wrap gap-1.5 mb-5">
+                  {project.technologies.slice(0, 3).map((tech) => (
                     <span
                       key={tech}
-                      className="px-3 py-1 text-xs font-code font-medium bg-[#F5F4F0] text-[#444] border border-[#E8E8E4] rounded-full"
+                      className="px-2 py-0.5 text-[10px] font-code font-semibold bg-white/[0.03] text-[#71717A] border border-white/[0.06] rounded-full tracking-wider uppercase"
                     >
                       {tech}
                     </span>
                   ))}
+                  {project.technologies.length > 3 && (
+                    <span className="px-2 py-0.5 text-[10px] font-code font-semibold text-[#52525B] tracking-wider">
+                      +{project.technologies.length - 3}
+                    </span>
+                  )}
                 </div>
 
-                <div className="flex items-center justify-end">
-                  <span className="inline-flex items-center gap-2 text-sm font-bold text-[#E8651A] font-body group-hover:gap-3 transition-all duration-300">
-                    View Details
-                    <svg className="w-5 h-5 transition-transform" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                    </svg>
+                <div className="flex items-center justify-between mt-auto">
+                  <span className="text-xs font-code text-[#52525B] tracking-widest uppercase">
+                    View case
+                  </span>
+                  <span className="w-7 h-7 rounded-full border border-white/[0.08] flex items-center justify-center text-[#52525B] group-hover:bg-[#FF6B00] group-hover:border-[#FF6B00] group-hover:text-white transition-all duration-300">
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </span>
                 </div>
               </div>
@@ -185,18 +206,18 @@ export default function ClientProjectsSection({
           ))}
         </div>
 
-        {/* View All Projects link */}
-        <div className="text-center mt-12 md:mt-16 relative z-10">
-          <a
-            href="/projects"
-            className="inline-flex items-center gap-2 text-sm md:text-base font-bold text-[#E8651A] hover:bg-[#F5F4F0] px-6 py-3 rounded-lg transition-colors border border-transparent hover:border-[#E8E8E4]"
-          >
-            View All Projects
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </a>
-        </div>
+        {/* View All Projects link — only show if we have projects and a limit is set and there are more projects to see */}
+        {limit && projects.length > limit && (
+          <div className="text-center mt-12 md:mt-16 relative z-10">
+            <a
+              href="/projects"
+              className="group inline-flex items-center gap-2 text-sm md:text-base font-bold text-[#FF6B00] hover:bg-white/[0.03] px-6 py-3 rounded-xl transition-all border border-white/[0.08] hover:border-white/[0.18] hover:shadow-lg hover:shadow-[#FF6B00]/10"
+            >
+              View More Projects
+              <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );

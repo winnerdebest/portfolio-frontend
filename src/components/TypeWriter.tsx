@@ -16,12 +16,11 @@ const TypeWriter: React.FC<TypeWriterProps> = ({ texts }) => {
 
     const fullText = texts[currentIndex];
 
-    // Determine the delay based on the current state
     let delay = isDeleting ? 50 : 100;
     if (!isDeleting && currentText === fullText) {
-      delay = 2000; // Pause at the end of the word
+      delay = 2000;
     } else if (isDeleting && currentText === '') {
-      delay = 500; // Pause before typing the next word
+      delay = 500;
     }
 
     const timeout = setTimeout(() => {
@@ -48,8 +47,9 @@ const TypeWriter: React.FC<TypeWriterProps> = ({ texts }) => {
         style={{
           width: '3px',
           height: '1em',
-          background: '#E8651A',
+          background: '#FF6B00',
           verticalAlign: 'text-bottom',
+          boxShadow: '0 0 8px rgba(255, 107, 0, 0.4)',
         }}
       />
     </span>

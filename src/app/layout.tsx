@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import IslandNav from "@/components/IslandNav";
 // Fonts will be loaded via Google Fonts <link> tags in the <head>
 
 // SEO Metadata Configuration
@@ -176,6 +177,7 @@ export default function RootLayout({
         className="antialiased"
         style={{ fontFamily: 'var(--font-body), system-ui, sans-serif' }}
       >
+        <IslandNav />
         {children}
       </body>
     </html>
