@@ -15,19 +15,23 @@ export type Project = {
 };
 
 type ClientProjectsSectionProps = {
-  endpoint: string;
+  endpoint?: string;
   limit?: number;
+  initialProjects?: Project[];
 };
 
 export default function ClientProjectsSection({
   endpoint,
   limit,
+  initialProjects,
 }: ClientProjectsSectionProps) {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [projects, setProjects] = useState<Project[]>(initialProjects || []);
+  const [loading, setLoading] = useState(!initialProjects);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (initialProjects) return; // Skip fetch if we have initial data
+
     let isMounted = true;
 
     async function fetchProjects() {
@@ -65,26 +69,56 @@ export default function ClientProjectsSection({
       }
     }
 
-    fetchProjects();
+    if (endpoint) {
+      fetchProjects();
+    }
 
     return () => {
       isMounted = false;
     };
-  }, [endpoint]);
+  }, [endpoint, initialProjects]);
 
   if (loading) {
     return (
       <section
         id="projects"
-        className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 bg-[#050505]"
+        className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden bg-[#050505]"
       >
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center py-16">
-            <div
-              className="inline-block w-10 h-10 border-3 rounded-full animate-spin"
-              style={{ borderColor: 'rgba(255,255,255,0.06)', borderTopColor: '#FF6B00' }}
-            />
-            <p className="mt-4 text-sm text-[#71717A]">Loading projects...</p>
+        <div className="max-w-6xl mx-auto relative">
+          <div className="section-number">03</div>
+          <div className="mb-12 md:mb-16 relative z-10 pt-4">
+            <p className="font-code uppercase tracking-widest text-[#FF6B00] text-xs md:text-sm font-medium mb-3">
+              03 — Projects
+            </p>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-white">
+              Featured Work
+            </h2>
+            <p className="mt-4 text-base md:text-lg max-w-xl text-[#A1A1AA] font-body">
+              A selection of recent projects that showcase my skills and approach
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-6 lg:gap-8 relative z-10">
+            {Array.from({ length: limit || 4 }).map((_, i) => (
+              <div key={i} className="flex flex-col bg-[#111113] rounded-2xl overflow-hidden border border-white/[0.04]">
+                <div className="h-48 sm:h-56 bg-white/[0.02] animate-pulse shrink-0 border-b border-white/[0.04]" />
+                <div className="p-5 sm:p-6 flex flex-col flex-grow gap-4">
+                  <div className="h-6 w-3/4 bg-white/[0.03] rounded animate-pulse" />
+                  <div className="space-y-2 mb-5">
+                    <div className="h-4 w-full bg-white/[0.02] rounded animate-pulse" />
+                    <div className="h-4 w-5/6 bg-white/[0.02] rounded animate-pulse" />
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="h-5 w-16 bg-white/[0.03] rounded-full animate-pulse" />
+                    <div className="h-5 w-20 bg-white/[0.03] rounded-full animate-pulse" />
+                  </div>
+                  <div className="mt-auto flex justify-between items-center">
+                    <div className="h-4 w-20 bg-white/[0.02] rounded animate-pulse" />
+                    <div className="h-7 w-7 bg-white/[0.03] rounded-full animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -143,6 +177,7 @@ export default function ClientProjectsSection({
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8 relative z-10">
+
           {(limit ? projects.slice(0, limit) : projects).map((project, i) => (
             <a
               key={project.id}

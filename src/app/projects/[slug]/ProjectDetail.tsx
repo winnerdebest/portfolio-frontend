@@ -239,11 +239,11 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                 Like what you see?
               </h3>
               <p className="text-sm text-[#71717A] mb-5 leading-relaxed">
-                Let&apos;s discuss how we can build something amazing together.
+                Check out more of my work or reach out for opportunities.
               </p>
               <a href="/#contact"
                 className="block w-full text-center px-5 py-3 bg-[#FF6B00] text-white font-semibold rounded-lg hover:bg-[#FF8533] transition-all hover:shadow-lg hover:shadow-[#FF6B00]/20 text-sm">
-                Start a Project
+                Get in Touch
               </a>
             </div>
 
@@ -266,7 +266,7 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
                   className="flex items-center justify-between p-3 rounded-lg border border-white/[0.06] hover:border-[#FF6B00]/30 hover:text-[#FF6B00] transition-all group text-sm font-medium text-white glow-ring">
                   <div className="flex items-center gap-2">
                     <Code className="w-4 h-4" />
-                    Hire Winner
+                    Contact Winner
                   </div>
                   <ArrowUpRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </a>
@@ -283,13 +283,13 @@ export default function ProjectDetail({ project }: ProjectDetailProps) {
           <div className="relative">
             <p className="text-xs font-mono text-[#FF6B00] tracking-widest uppercase mb-3"
               style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-              Ready to collaborate?
+              Reach out
             </p>
             <h3 style={{ fontFamily: "'Syne', sans-serif" }}
               className="text-2xl sm:text-3xl font-black leading-tight mb-2">
-              Got a project?<br />Let&apos;s build something.
+              Interested in connecting?
             </h3>
-            <p className="text-[#71717A] text-sm">Rivers State, Nigeria — working with clients globally</p>
+            <p className="text-[#71717A] text-sm">Rivers State, Nigeria — Always open to new opportunities</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 flex-shrink-0 relative">
             <a href={project.project_link} target="_blank" rel="noopener noreferrer"
