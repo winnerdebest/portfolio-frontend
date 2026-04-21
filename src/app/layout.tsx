@@ -60,7 +60,7 @@ export const metadata: Metadata = {
     description: 'Full Stack Developer specializing in Python, Django, React, and Next.js. Building scalable web applications and delivering exceptional digital experiences.',
     images: [
       {
-        url: 'https://res.cloudinary.com/dvlfnmxxw/image/upload/v1757463768/1749113539780_adejvm.jpg',
+        url: '/previewlink.png',
         width: 1200,
         height: 630,
         alt: 'Winner OrluVictor - Full Stack Developer',
@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     title: 'Winner OrluVictor | Full Stack Developer',
     description: 'Full Stack Developer specializing in Python, Django, React, and Next.js. Building scalable web applications in Nigeria.',
     creator: '@buildwithwinner',
-    images: ['https://res.cloudinary.com/dvlfnmxxw/image/upload/v1757463768/1749113539780_adejvm.jpg'],
+    images: ['/previewlink.png'],
   },
 
   robots: {
@@ -123,7 +123,7 @@ export default function RootLayout({
               "@type": "Person",
               "name": "Winner OrluVictor",
               "url": "https://buildwithwinner.name.ng",
-              "image": "https://res.cloudinary.com/dvlfnmxxw/image/upload/v1757463768/1749113539780_adejvm.jpg",
+              "image": "https://buildwithwinner.name.ng/previewlink.png",
               "sameAs": [
                 "https://github.com/winnerdebest",
                 "https://linkedin.com/in/winner-orluvictor-944175333",
