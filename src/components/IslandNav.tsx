@@ -120,7 +120,7 @@ export default function IslandNav() {
 
           {/* Resume */}
           <a
-            href="/resume.pdf"
+            href="/WinnerOrluVictor_AI_Engineer_CV.pdf"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium text-[#A1A1AA] border border-white/[0.08] hover:border-white/[0.18] hover:text-white transition-all"
@@ -169,7 +169,7 @@ export default function IslandNav() {
             ))}
             <div className="pt-2 mt-1 border-t border-white/[0.06] flex flex-col gap-2 px-1">
               <a
-                href="/resume.pdf"
+                href="/WinnerOrluVictor_AI_Engineer_CV.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-white/[0.08] text-[#A1A1AA] text-sm font-medium hover:text-white hover:border-white/[0.15] transition-all"
