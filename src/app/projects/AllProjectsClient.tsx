@@ -21,6 +21,7 @@ type Project = {
   preview_image: string | null;
   technologies: string[];
   slug: string;
+  is_featured?: boolean;
 };
 
 type Props = {
@@ -67,7 +68,7 @@ export default function AllProjectsClient({ projects, error }: Props) {
 
   const allTechs = Array.from(new Set(projects.flatMap((p) => p.technologies))).sort();
 
-  const filtered = projects.filter((p) => {
+  let filtered = projects.filter((p) => {
     const matchTech = filter === "All" || p.technologies.includes(filter);
     const matchSearch =
       search === "" ||
@@ -75,6 +76,12 @@ export default function AllProjectsClient({ projects, error }: Props) {
       p.short_description.toLowerCase().includes(search.toLowerCase()) ||
       p.technologies.some((t) => t.toLowerCase().includes(search.toLowerCase()));
     return matchTech && matchSearch;
+  });
+
+  filtered = filtered.sort((a, b) => {
+    if (a.is_featured && !b.is_featured) return -1;
+    if (!a.is_featured && b.is_featured) return 1;
+    return b.id - a.id;
   });
 
   return (

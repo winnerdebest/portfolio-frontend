@@ -11,6 +11,7 @@ export type Project = {
   preview_image: string | null;
   technologies: string[];
   slug: string;
+  is_featured?: boolean;
 };
 
 type ClientProjectsSectionProps = {
@@ -44,7 +45,12 @@ export default function ClientProjectsSection({
         const data = await response.json();
 
         if (isMounted) {
-          setProjects(data);
+          const sortedData = [...data].sort((a, b) => {
+            if (a.is_featured && !b.is_featured) return -1;
+            if (!a.is_featured && b.is_featured) return 1;
+            return b.id - a.id;
+          });
+          setProjects(sortedData);
           setError(null);
         }
       } catch (err) {

@@ -35,37 +35,28 @@ const marqueeSkills = [...skills, ...skills, ...skills];
 
 const experiences = [
   {
+    company: 'Quickcarts',
+    role: 'Founder & Lead Developer',
+    duration: '2023 - Present',
+    current: true,
+  },
+  {
     company: 'Rivers State ICT Department',
     role: 'IT Support Specialist',
     duration: '1 year',
     current: false,
-    description: [
-      'Managed government IT infrastructure and systems',
-      'Led system upgrades affecting 100+ users',
-      'Provided technical training to staff members',
-    ],
   },
   {
     company: 'Serverlink',
     role: 'Web Developer & IT Support',
     duration: '6 months',
     current: false,
-    description: [
-      'Developed scalable web applications using Django and React',
-      'Implemented RESTful APIs serving 10k+ daily requests',
-      'Provided technical support and system maintenance',
-    ],
   },
   {
     company: 'Career On Track',
     role: 'Full Stack Developer',
     duration: 'Current',
     current: true,
-    description: [
-      'Built a full-featured job portal using Django REST framework and React',
-      'Optimized application performance leading to 30% faster load times',
-      'Integrated third-party services for payment and notifications',
-    ],
   },
 ];
 
@@ -306,17 +297,6 @@ const Portfolio = () => {
                         {exp.duration}
                       </span>
                     </div>
-
-                    <div className="w-full h-px bg-white/[0.04] mb-5" />
-
-                    <ul className="space-y-3">
-                      {exp.description.map((item, i) => (
-                        <li key={i} className="flex items-start gap-3 text-[#A1A1AA] text-sm md:text-base leading-relaxed">
-                          <span className="mt-2 w-1.5 h-1.5 rounded-full bg-[#FF6B00] flex-shrink-0" />
-                          {item}
-                        </li>
-                      ))}
-                    </ul>
                   </div>
                 </div>
               ))}
