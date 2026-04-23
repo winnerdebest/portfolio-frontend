@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react';
 import emailjs from '@emailjs/browser';
 import {
   Github, Linkedin, Mail, MapPin, Phone,
-  ArrowRight, Palette, Terminal, MessageSquare, Users
+  ArrowRight, Palette, Terminal, MessageSquare, Users, Quote
 } from 'lucide-react';
 import ClientProjectsSection, { Project } from "@/components/ProjectsSection";
 import TypeWriter from "@/components/TypeWriter";
@@ -14,24 +14,57 @@ const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'servic
 const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_xxxxxxx';
 const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'aBcDeFgHiJ123456';
 
-const TYPEWRITER_TEXTS = ['Full Stack Developer', 'Python Expert', 'Problem Solver'];
+const TYPEWRITER_TEXTS = ['Full-Stack Engineer', 'SaaS Builder', 'Problem Solver'];
 
-const skills = [
+const skillsRow1 = [
   { name: 'Python', iconClass: 'devicon-python-plain colored' },
   { name: 'Django', iconClass: 'devicon-django-plain' },
+  { name: 'FastAPI', iconClass: 'devicon-fastapi-plain colored' },
   { name: 'JavaScript', iconClass: 'devicon-javascript-plain colored' },
   { name: 'TypeScript', iconClass: 'devicon-typescript-plain colored' },
   { name: 'React', iconClass: 'devicon-react-original colored' },
+];
+
+const skillsRow2 = [
   { name: 'Next.js', iconClass: 'devicon-nextjs-plain' },
   { name: 'PostgreSQL', iconClass: 'devicon-postgresql-plain colored' },
   { name: 'MongoDB', iconClass: 'devicon-mongodb-plain colored' },
-  { name: 'Figma', iconClass: 'devicon-figma-plain colored' },
   { name: 'Docker', iconClass: 'devicon-docker-plain colored' },
   { name: 'Git', iconClass: 'devicon-git-plain colored' },
+  { name: 'AWS', iconClass: 'devicon-amazonwebservices-plain-wordmark colored' },
   { name: 'Linux', iconClass: 'devicon-linux-plain' },
+  { name: 'Supabase', iconClass: 'devicon-supabase-plain colored' },
+  { name: 'Figma', iconClass: 'devicon-figma-plain colored' },
 ];
 
-const marqueeSkills = [...skills, ...skills, ...skills];
+const marqueeRow1 = [...skillsRow1, ...skillsRow1, ...skillsRow1];
+const marqueeRow2 = [...skillsRow2, ...skillsRow2, ...skillsRow2];
+
+const paymentIntegrations = [
+  { name: 'Flutterwave' },
+  { name: 'Paystack' },
+  { name: 'Stripe' },
+  { name: 'DodoPay' },
+];
+
+const testimonials = [
+  {
+    quote: "Winner has a rare ability to move fast without breaking things. He built and maintained critical features on our platform while keeping the codebase clean and the CI/CD pipeline airtight. Exactly the kind of engineer you want on a production system.",
+    name: "Team lead",
+    role: "Career On Track",
+  },
+  {
+    quote: "I went from zero to building and deploying my own full-stack app in three months under Winner's mentorship. He doesn't just teach syntax, he teaches how to think like an engineer. Best investment I've made in my career.",
+    name: "Private student",
+    role: "BuildWithWinner",
+  },
+  {
+    quote: "Winner delivered a complete school management system on time and on budget. He handled everything: backend, frontend, server setup, and was communicative throughout. We still use it daily with zero issues.",
+    name: "Client",
+    role: "Serverlink",
+  },
+];
+
 
 const experiences = [
   {
@@ -136,30 +169,33 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
           </div>
 
           {/* ── Heading ── */}
-          <div className="space-y-3 mb-5">
+          <div className="space-y-3 mb-10">
             <h1 className="font-heading font-black text-white leading-[1.05] tracking-tight"
                 style={{ fontSize: 'clamp(2.2rem, 5.5vw, 4rem)' }}>
-              Hey, I&apos;m Winner OrluVictor.
+              I&apos;m Winner OrluVictor.
             </h1>
+            <p className="font-heading font-bold text-[#A1A1AA] leading-snug"
+                style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)' }}>
+              Full-Stack Engineer building production SaaS and AI-powered products.
+            </p>
             {/* Typewriter role */}
             <div className="text-lg sm:text-xl lg:text-2xl font-body text-[#FF6B00] font-medium flex items-center justify-center gap-2">
               <TypeWriter texts={TYPEWRITER_TEXTS} />
             </div>
           </div>
 
-          {/* ── Tagline ── */}
-          <p className="font-body text-[#71717A] text-base sm:text-lg max-w-lg leading-relaxed mb-10">
-            Django/Next.js full-stack developer based in Nigeria, building SaaS products and scalable web applications.
-          </p>
+
 
           {/* ── CTAs ── */}
           <div className="flex flex-wrap gap-3 justify-center">
-            <button
-              onClick={() => scrollToSection('projects')}
+            <a
+              href="/WinnerOrluVictor_CV.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
               className="px-7 py-3 rounded-xl bg-[#FF6B00] text-white font-semibold text-sm hover:bg-[#FF8533] hover:shadow-xl hover:shadow-[#FF6B00]/30 hover:scale-105 transition-all flex items-center gap-2"
             >
-              See My Work <ArrowRight className="w-4 h-4" />
-            </button>
+              Download Resume <ArrowRight className="w-4 h-4" />
+            </a>
             <button
               onClick={() => scrollToSection('contact')}
               className="px-7 py-3 rounded-xl border border-white/[0.12] text-[#A1A1AA] bg-white/[0.03] text-sm font-medium hover:bg-white/[0.07] hover:text-white hover:border-white/[0.22] transition-all backdrop-blur-sm"
@@ -185,7 +221,7 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
             <div className="lg:w-2/5 space-y-8">
               <div className="border-l-4 border-[#FF6B00] pl-6 py-2 scroll-reveal delay-100">
                 <p className="font-heading italic text-2xl md:text-3xl text-white leading-tight">
-                  &quot;If it&apos;s complex, tedious, or critical — that&apos;s my lane.&quot;
+                  &quot;If it&apos;s complex, tedious, or critical, that&apos;s my lane.&quot;
                 </p>
               </div>
               <div className="flex flex-wrap gap-3 scroll-reveal delay-200">
@@ -199,8 +235,9 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
             </div>
             <div className="lg:w-3/5 space-y-12">
               <div className="space-y-6 text-lg text-[#A1A1AA] leading-relaxed scroll-reveal delay-200">
-                <p>I build and maintain websites, manage servers, and make sure everything runs smoothly behind the scenes.</p>
-                <p>It took years to build these skills with a fair share of mistakes along the way but trust me, those days are long gone 😄. Proficient in both frontend and backend technologies, you won&apos;t have to worry about a thing.</p>
+                <p>I&apos;m a Full-Stack Engineer with 5+ years of experience building production systems. Not side projects, real products with real users. I&apos;ve shipped a multi-tenant SaaS platform (QuickCarts) handling escrow payments via Flutterwave, Paystack, and Stripe, Cloudinary media, and AWS infrastructure. I&apos;ve integrated AI features using the Anthropic Claude API. I&apos;ve built and maintained school management systems, CRMs, and inventory platforms at companies in Nigeria.</p>
+                <p>I work across the full stack: Python and Django on the backend, React and Next.js on the frontend, PostgreSQL and Supabase for data, and AWS EC2 for deployment. I also run BuildWithWinner, a coding school where I mentor developers from zero to their first deployed application.</p>
+                <p>If it involves building something complex, maintaining it under pressure, or shipping it fast, that&apos;s exactly what I do.</p>
               </div>
               <div>
                 <h3 className="font-heading font-bold text-xl text-white mb-6 scroll-reveal delay-300">Core Philosophy</h3>
@@ -224,20 +261,33 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
         </div>
       </section>
 
-      {/* ── Skills — Single Marquee Row ── */}
+      {/* Skills */}
       <section id="skills" className="py-20 md:py-32 bg-[#050505] relative overflow-hidden">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-14 md:mb-20 scroll-reveal">
-          <span className="section-label">02 — EXPERTISE</span>
+          <span className="section-label">02 ― EXPERTISE</span>
           <h2 className="font-heading font-black text-white leading-tight"
             style={{ fontSize: 'clamp(36px, 6vw, 72px)', letterSpacing: '-0.03em' }}>
             Technologies I work with
           </h2>
         </div>
 
-        <div className="marquee-wrapper">
+        {/* Row 1: scrolls left */}
+        <div className="marquee-wrapper mb-5">
           <div className="marquee-track">
-            {marqueeSkills.map((skill, i) => (
-              <div key={`s-${i}`} className="marquee-item">
+            {marqueeRow1.map((skill, i) => (
+              <div key={`r1-${i}`} className="marquee-item">
+                <i className={skill.iconClass} />
+                <span>{skill.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Row 2: scrolls right */}
+        <div className="marquee-wrapper mb-14 md:mb-20">
+          <div className="marquee-track marquee-track-reverse">
+            {marqueeRow2.map((skill, i) => (
+              <div key={`r2-${i}`} className="marquee-item">
                 <i className={skill.iconClass} />
                 <span>{skill.name}</span>
               </div>
@@ -249,13 +299,44 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
       {/* ── Projects ── */}
       <ClientProjectsSection endpoint="/projects/" limit={4} initialProjects={initialProjects} />
 
+      {/* ── Testimonials (Change 6) ── */}
+      <section id="testimonials" className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-[#0A0A0C] relative overflow-hidden">
+        <div className="max-w-6xl mx-auto relative">
+          <div className="section-number">04</div>
+          <div className="mb-12 md:mb-16 relative z-10 pt-4 scroll-reveal">
+            <span className="section-label">04 — TESTIMONIALS</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-white mb-4">
+              What people say
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 relative z-10">
+            {testimonials.map((t, i) => (
+              <div
+                key={i}
+                className={`bg-[#111113] rounded-2xl border border-white/[0.06] p-6 md:p-8 card-shadow border-l-4 border-l-[#FF6B00] hover:-translate-y-1 hover:border-white/[0.12] transition-all duration-300 scroll-reveal ${['delay-100','delay-200','delay-300'][i]}`}
+              >
+                <Quote className="w-8 h-8 text-[#FF6B00]/30 mb-4" />
+                <p className="text-[#A1A1AA] text-sm md:text-base leading-relaxed mb-6 font-body italic">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <div>
+                  <p className="font-heading font-bold text-white text-sm">{t.name}</p>
+                  <p className="text-xs text-[#FF6B00] font-code tracking-wide">{t.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── Experience ── */}
       <section id="experience" className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-[#0A0A0C] relative overflow-hidden">
         <div className="max-w-4xl mx-auto relative">
-          <div className="section-number">04</div>
+          <div className="section-number">05</div>
 
           <div className="mb-12 md:mb-16 relative z-10 pt-4 scroll-reveal">
-            <span className="section-label">04 — JOURNEY</span>
+            <span className="section-label">05 — JOURNEY</span>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-white mb-4">
               Career Journey
             </h2>
@@ -313,7 +394,7 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#FF6B00]/[0.03] rounded-full blur-[120px] pointer-events-none" />
 
         <div className="max-w-6xl mx-auto relative">
-          <div className="section-number" style={{ color: 'rgba(255,255,255,0.02)' }}>05</div>
+          <div className="section-number" style={{ color: 'rgba(255,255,255,0.02)' }}>06</div>
           <div className="mb-12 md:mb-16 relative z-10 pt-4 text-center scroll-reveal">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold font-heading text-white mb-4">
               Get in Touch
@@ -434,7 +515,10 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
       {/* ── Footer ── */}
       <footer className="py-8 md:py-12 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06] bg-[#050505] text-[#71717A] text-sm">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-          <p>© 2026 @buildwithwinner. All rights reserved.</p>
+          <div>
+            <p>© 2026 @buildwithwinner. All rights reserved.</p>
+            <p className="text-xs text-[#52525B] mt-1">Building production software from Nigeria for the world.</p>
+          </div>
           <div className="flex items-center gap-6">
             <a href="https://github.com/winnerdebest" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6B00] transition-colors"><Github className="w-5 h-5" /></a>
             <a href="https://linkedin.com/in/winner-orluvictor-944175333" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6B00] transition-colors"><Linkedin className="w-6 h-6" /></a>

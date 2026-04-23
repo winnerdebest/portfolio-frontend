@@ -14,6 +14,13 @@ export type Project = {
   is_featured?: boolean;
 };
 
+const PROJECT_CONTEXT_LINES: Record<string, string> = {
+  'quickcarts': 'Multi-tenant SaaS for Nigerian vendors, live on AWS with escrow payments and Claude AI integration.',
+  'career-on-track': 'AI-powered career guidance platform, built and maintained as Full-Stack Developer, handling auth, CI/CD, and AI features.',
+  'ani': 'Strategic AI agent built with FastAPI and Pyrogram, automated workflows with Supabase as the data layer.',
+  'mindful-canva': 'Lightweight note-taking app, clean Next.js and Supabase implementation with a focus on UX simplicity.',
+};
+
 type ClientProjectsSectionProps = {
   endpoint?: string;
   limit?: number;
@@ -233,6 +240,13 @@ export default function ClientProjectsSection({
                     </span>
                   )}
                 </div>
+
+                {/* Context / result line */}
+                {PROJECT_CONTEXT_LINES[project.slug] && (
+                  <p className="text-xs text-[#A1A1AA]/70 leading-relaxed mb-5 font-body border-l-2 border-[#FF6B00]/30 pl-3">
+                    {PROJECT_CONTEXT_LINES[project.slug]}
+                  </p>
+                )}
 
                 <div className="flex items-center justify-between mt-auto">
                   <span className="text-xs font-code text-[#52525B] tracking-widest uppercase">

@@ -458,6 +458,18 @@ h1, h2, h3, h4, h5, h6 {
   animation-play-state: paused;
 }
 
+.marquee-track-reverse {
+  animation: marquee-reverse 38s linear infinite;
+}
+.marquee-track-reverse:hover {
+  animation-play-state: paused;
+}
+
+@keyframes marquee-reverse {
+  0%   { transform: translateX(-50%); }
+  100% { transform: translateX(0); }
+}
+
 .marquee-item {
   display: flex;
   align-items: center;
