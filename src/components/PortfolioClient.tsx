@@ -7,6 +7,7 @@ import {
   ArrowRight, Palette, Terminal, MessageSquare, Users, Quote
 } from 'lucide-react';
 import ClientProjectsSection, { Project } from "@/components/ProjectsSection";
+import SpotifyNowPlaying from "@/components/SpotifyNowPlaying";
 import TypeWriter from "@/components/TypeWriter";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
 
@@ -16,29 +17,48 @@ const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'aBcDeF
 
 const TYPEWRITER_TEXTS = ['Full-Stack Engineer', 'SaaS Builder', 'Problem Solver'];
 
-const skillsRow1 = [
-  { name: 'Python', iconClass: 'devicon-python-plain colored' },
-  { name: 'Django', iconClass: 'devicon-django-plain' },
-  { name: 'FastAPI', iconClass: 'devicon-fastapi-plain colored' },
-  { name: 'JavaScript', iconClass: 'devicon-javascript-plain colored' },
-  { name: 'TypeScript', iconClass: 'devicon-typescript-plain colored' },
-  { name: 'React', iconClass: 'devicon-react-original colored' },
+const skillCategories = [
+  {
+    title: 'Backend',
+    skills: [
+      { name: 'Python', iconClass: 'devicon-python-plain colored' },
+      { name: 'Django', iconClass: 'devicon-django-plain' },
+      { name: 'FastAPI', iconClass: 'devicon-fastapi-plain colored' },
+    ],
+  },
+  {
+    title: 'Frontend',
+    skills: [
+      { name: 'JavaScript', iconClass: 'devicon-javascript-plain colored' },
+      { name: 'TypeScript', iconClass: 'devicon-typescript-plain colored' },
+      { name: 'React', iconClass: 'devicon-react-original colored' },
+      { name: 'Next.js', iconClass: 'devicon-nextjs-plain' },
+    ],
+  },
+  {
+    title: 'Databases',
+    skills: [
+      { name: 'PostgreSQL', iconClass: 'devicon-postgresql-plain colored' },
+      { name: 'MongoDB', iconClass: 'devicon-mongodb-plain colored' },
+      { name: 'Supabase', iconClass: 'devicon-supabase-plain colored' },
+    ],
+  },
+  {
+    title: 'DevOps & Tools',
+    skills: [
+      { name: 'Docker', iconClass: 'devicon-docker-plain colored' },
+      { name: 'Git', iconClass: 'devicon-git-plain colored' },
+      { name: 'AWS', iconClass: 'devicon-amazonwebservices-plain-wordmark colored' },
+      { name: 'Linux', iconClass: 'devicon-linux-plain' },
+    ],
+  },
+  {
+    title: 'Design & Product',
+    skills: [
+      { name: 'Figma', iconClass: 'devicon-figma-plain colored' },
+    ],
+  },
 ];
-
-const skillsRow2 = [
-  { name: 'Next.js', iconClass: 'devicon-nextjs-plain' },
-  { name: 'PostgreSQL', iconClass: 'devicon-postgresql-plain colored' },
-  { name: 'MongoDB', iconClass: 'devicon-mongodb-plain colored' },
-  { name: 'Docker', iconClass: 'devicon-docker-plain colored' },
-  { name: 'Git', iconClass: 'devicon-git-plain colored' },
-  { name: 'AWS', iconClass: 'devicon-amazonwebservices-plain-wordmark colored' },
-  { name: 'Linux', iconClass: 'devicon-linux-plain' },
-  { name: 'Supabase', iconClass: 'devicon-supabase-plain colored' },
-  { name: 'Figma', iconClass: 'devicon-figma-plain colored' },
-];
-
-const marqueeRow1 = [...skillsRow1, ...skillsRow1, ...skillsRow1];
-const marqueeRow2 = [...skillsRow2, ...skillsRow2, ...skillsRow2];
 
 const paymentIntegrations = [
   { name: 'Flutterwave' },
@@ -172,11 +192,11 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
           <div className="space-y-3 mb-10">
             <h1 className="font-heading font-black text-white leading-[1.05] tracking-tight"
                 style={{ fontSize: 'clamp(2.2rem, 5.5vw, 4rem)' }}>
-              I&apos;m Winner OrluVictor.
+              I&apos;m Winner.
             </h1>
             <p className="font-heading font-bold text-[#A1A1AA] leading-snug"
                 style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)' }}>
-              Full-Stack Engineer building production SaaS and AI-powered products.
+              Software Engineer building and deploying SaaS products.
             </p>
             {/* Typewriter role */}
             <div className="text-lg sm:text-xl lg:text-2xl font-body text-[#FF6B00] font-medium flex items-center justify-center gap-2">
@@ -203,6 +223,8 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
               Contact Me
             </button>
           </div>
+
+          <SpotifyNowPlaying />
 
         </div>
       </section>
@@ -235,11 +257,11 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
             </div>
             <div className="lg:w-3/5 space-y-12">
               <div className="space-y-6 text-lg text-[#A1A1AA] leading-relaxed scroll-reveal delay-200">
-                <p>I&apos;m a Full-Stack Engineer with 5+ years of experience building production systems. Not side projects, real products with real users. I&apos;ve shipped a multi-tenant SaaS platform (QuickCarts) handling escrow payments via Flutterwave, Paystack, and Stripe, Cloudinary media, and AWS infrastructure. I&apos;ve integrated AI features using the Anthropic Claude API. I&apos;ve built and maintained school management systems, CRMs, and inventory platforms at companies in Nigeria.</p>
+                <p>I&apos;m a Software Engineer with 5+ years of experience building production systems. Not side projects, real products with real users. I&apos;ve shipped a multi-tenant SaaS platform (QuickCarts) handling escrow payments via Flutterwave, and Paystack. I&apos;ve built and maintained school management systems, CRMs, and inventory platforms at companies in Nigeria.</p>
                 <p>I work across the full stack: Python and Django on the backend, React and Next.js on the frontend, PostgreSQL and Supabase for data, and AWS EC2 for deployment. I also run BuildWithWinner, a coding school where I mentor developers from zero to their first deployed application.</p>
                 <p>If it involves building something complex, maintaining it under pressure, or shipping it fast, that&apos;s exactly what I do.</p>
               </div>
-              <div>
+              {/*<div>
                 <h3 className="font-heading font-bold text-xl text-white mb-6 scroll-reveal delay-300">Core Philosophy</h3>
                 <div className="grid sm:grid-cols-3 gap-6">
                   {[
@@ -255,41 +277,47 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
                     </div>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
       </section>
 
       {/* Skills */}
-      <section id="skills" className="py-20 md:py-32 bg-[#050505] relative overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-14 md:mb-20 scroll-reveal">
-          <span className="section-label">02 ― EXPERTISE</span>
-          <h2 className="font-heading font-black text-white leading-tight"
-            style={{ fontSize: 'clamp(36px, 6vw, 72px)', letterSpacing: '-0.03em' }}>
-            Technologies I work with
-          </h2>
-        </div>
-
-        {/* Row 1: scrolls left */}
-        <div className="marquee-wrapper mb-5">
-          <div className="marquee-track">
-            {marqueeRow1.map((skill, i) => (
-              <div key={`r1-${i}`} className="marquee-item">
-                <i className={skill.iconClass} />
-                <span>{skill.name}</span>
-              </div>
-            ))}
+      <section id="skills" className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-[#050505] relative overflow-hidden">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-12 md:mb-16 scroll-reveal">
+            <span className="section-label">02 - EXPERTISE</span>
+            <h2 className="font-heading font-black text-white leading-tight"
+              style={{ fontSize: 'clamp(36px, 6vw, 72px)' }}>
+              Technologies I work with
+            </h2>
           </div>
-        </div>
 
-        {/* Row 2: scrolls right */}
-        <div className="marquee-wrapper mb-14 md:mb-20">
-          <div className="marquee-track marquee-track-reverse">
-            {marqueeRow2.map((skill, i) => (
-              <div key={`r2-${i}`} className="marquee-item">
-                <i className={skill.iconClass} />
-                <span>{skill.name}</span>
+          <div className="grid gap-5 md:grid-cols-2">
+            {skillCategories.map((category, index) => (
+              <div
+                key={category.title}
+                className={`scroll-reveal bg-[#111113] border border-white/[0.06] rounded-xl p-5 sm:p-6 card-shadow transition-all duration-300 hover:-translate-y-1 hover:border-[#FF6B00]/30 glow-ring ${['delay-0','delay-100','delay-200','delay-300','delay-400'][index]}`}
+              >
+                <div className="mb-5 flex items-center justify-between gap-4">
+                  <h3 className="font-heading text-lg font-bold text-white">{category.title}</h3>
+                  <span className="font-code text-xs text-[#71717A]">
+                    {String(category.skills.length).padStart(2, '0')}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  {category.skills.map((skill) => (
+                    <div
+                      key={skill.name}
+                      className="group flex min-h-12 items-center gap-3 rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-3 transition-all duration-300 hover:border-[#FF6B00]/40 hover:bg-[#FF6B00]/10"
+                    >
+                      <i className={`${skill.iconClass} text-2xl leading-none text-[#71717A] transition-transform duration-300 group-hover:scale-110`} />
+                      <span className="text-sm font-semibold text-white">{skill.name}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             ))}
           </div>

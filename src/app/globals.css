@@ -161,11 +161,6 @@ h1, h2, h3, h4, h5, h6 {
   50%      { opacity: 0.8; }
 }
 
-@keyframes marquee {
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-
 /* ════════════════════════════════════════════════════
    ANIMATION UTILITY CLASSES
    ════════════════════════════════════════════════════ */
@@ -420,94 +415,6 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 0.75rem;
   margin-top: 0.25rem;
   font-family: var(--font-body), system-ui, sans-serif;
-}
-
-/* ════════════════════════════════════════════════════
-   MARQUEE (Skills section)
-   ════════════════════════════════════════════════════ */
-.marquee-wrapper {
-  overflow: hidden;
-  width: 100%;
-  position: relative;
-}
-
-.marquee-wrapper::before,
-.marquee-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0; bottom: 0;
-  width: 140px;
-  z-index: 2;
-  pointer-events: none;
-}
-.marquee-wrapper::before {
-  left: 0;
-  background: linear-gradient(to right, var(--bg-primary), transparent);
-}
-.marquee-wrapper::after {
-  right: 0;
-  background: linear-gradient(to left, var(--bg-primary), transparent);
-}
-
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee 32s linear infinite;
-}
-.marquee-track:hover {
-  animation-play-state: paused;
-}
-
-.marquee-track-reverse {
-  animation: marquee-reverse 38s linear infinite;
-}
-.marquee-track-reverse:hover {
-  animation-play-state: paused;
-}
-
-@keyframes marquee-reverse {
-  0%   { transform: translateX(-50%); }
-  100% { transform: translateX(0); }
-}
-
-.marquee-item {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 32px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 100px;
-  margin-right: 20px;
-  white-space: nowrap;
-  transition: all 0.3s ease;
-  cursor: default;
-  flex-shrink: 0;
-  background: var(--glass-bg);
-}
-.marquee-item:hover {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-  color: #fff;
-  box-shadow: 0 0 24px rgba(255, 107, 0, 0.2);
-}
-.marquee-item:hover i {
-  filter: brightness(10) !important;
-}
-.marquee-item i {
-  font-size: 30px;
-  filter: grayscale(80%) brightness(0.8);
-  transition: filter 0.3s ease;
-  line-height: 1;
-}
-.marquee-item span {
-  font-family: var(--font-body);
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-heading);
-  transition: color 0.3s ease;
-}
-.marquee-item:hover span {
-  color: #fff;
 }
 
 /* ════════════════════════════════════════════════════
