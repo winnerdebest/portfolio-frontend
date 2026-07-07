@@ -189,7 +189,7 @@ export default function IslandNav() {
                   <Github className="w-4 h-4" />
                 </a>
                 <a
-                  href="https://x.com/buildwithwinner"
+                  href="https://x.com/dat_poketguy"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-10 h-10 flex items-center justify-center rounded-xl border border-white/[0.08] text-[#71717A] hover:text-white hover:border-white/[0.15] transition-all"
