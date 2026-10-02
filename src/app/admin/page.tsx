@@ -6,7 +6,7 @@ import {
   MessageSquareQuote, Send, LogOut, ExternalLink, Save, Plus, Trash2,
   Upload, Eye, CheckCircle2, AlertCircle, Sparkles, Star, ArrowUpRight,
   ShieldCheck, Lock, RefreshCw, X, Link as LinkIcon, ChevronLeft, ChevronRight,
-  Image as ImageIcon, ArrowLeft, ArrowRight
+  ChevronUp, ChevronDown, Image as ImageIcon, ArrowLeft, ArrowRight, ArrowUp, ArrowDown
 } from "lucide-react";
 import {
   getSiteContent, updateSiteContent, loginAdmin, getStoredToken,
@@ -414,19 +414,26 @@ export default function AdminPage() {
   };
 
   // Experience helpers
-  const addExperience = () => {
+  const addExperience = (position: 'top' | 'bottom' = 'bottom') => {
     if (!content) return;
     const newExp: ExperienceItem = {
       company: "Company Name",
       role: "Software Engineer",
       duration: "Present",
-      current: true,
+      current: false,
       impact: "Key contributions and accomplishments...",
     };
+    const list = [...(content.experiences || [])];
+    if (position === 'top') {
+      list.unshift(newExp);
+    } else {
+      list.push(newExp);
+    }
     setContent({
       ...content,
-      experiences: [newExp, ...(content.experiences || [])],
+      experiences: list,
     });
+    showToast(position === 'top' ? "New milestone added at top (#1)" : "New milestone added at bottom");
   };
 
   const updateExperience = (index: number, field: keyof ExperienceItem, val: any) => {
@@ -440,20 +447,49 @@ export default function AdminPage() {
     if (!content) return;
     const list = (content.experiences || []).filter((_, i) => i !== index);
     setContent({ ...content, experiences: list });
+    showToast("Milestone removed");
+  };
+
+  const moveExperience = (index: number, direction: 'up' | 'down') => {
+    if (!content || !content.experiences) return;
+    const list = [...content.experiences];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+    const temp = list[index];
+    list[index] = list[targetIndex];
+    list[targetIndex] = temp;
+    setContent({ ...content, experiences: list });
+  };
+
+  const moveExperienceToPosition = (fromIndex: number, toIndex: number) => {
+    if (!content || !content.experiences) return;
+    if (toIndex < 0 || toIndex >= content.experiences.length || fromIndex === toIndex) return;
+    const list = [...content.experiences];
+    const [moved] = list.splice(fromIndex, 1);
+    list.splice(toIndex, 0, moved);
+    setContent({ ...content, experiences: list });
+    showToast(`Milestone moved to position #${toIndex + 1}`);
   };
 
   // Testimonials helpers
-  const addTestimonial = () => {
+  const addTestimonial = (position: 'top' | 'bottom' = 'bottom') => {
     if (!content) return;
     const newTest: TestimonialItem = {
       name: "Client Name",
       role: "Company / Project",
       quote: "Great working with Winner! Excellent problem solving and fast delivery.",
     };
+    const list = [...(content.testimonials || [])];
+    if (position === 'top') {
+      list.unshift(newTest);
+    } else {
+      list.push(newTest);
+    }
     setContent({
       ...content,
-      testimonials: [...(content.testimonials || []), newTest],
+      testimonials: list,
     });
+    showToast("New review added");
   };
 
   const updateTestimonial = (index: number, field: keyof TestimonialItem, val: string) => {
@@ -467,6 +503,28 @@ export default function AdminPage() {
     if (!content) return;
     const list = (content.testimonials || []).filter((_, i) => i !== index);
     setContent({ ...content, testimonials: list });
+    showToast("Review removed");
+  };
+
+  const moveTestimonial = (index: number, direction: 'up' | 'down') => {
+    if (!content || !content.testimonials) return;
+    const list = [...content.testimonials];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= list.length) return;
+    const temp = list[index];
+    list[index] = list[targetIndex];
+    list[targetIndex] = temp;
+    setContent({ ...content, testimonials: list });
+  };
+
+  const moveTestimonialToPosition = (fromIndex: number, toIndex: number) => {
+    if (!content || !content.testimonials) return;
+    if (toIndex < 0 || toIndex >= content.testimonials.length || fromIndex === toIndex) return;
+    const list = [...content.testimonials];
+    const [moved] = list.splice(fromIndex, 1);
+    list.splice(toIndex, 0, moved);
+    setContent({ ...content, testimonials: list });
+    showToast(`Review moved to position #${toIndex + 1}`);
   };
 
   // Loading screen
@@ -1247,23 +1305,32 @@ export default function AdminPage() {
             {/* 6. EXPERIENCES TAB */}
             {activeTab === "experiences" && content && (
               <div className="space-y-6 max-w-4xl">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
                     <h2 className="text-2xl font-bold font-heading text-white">Career Journey Timeline</h2>
-                    <p className="text-sm text-[#71717A] mt-0.5">Manage your career history, roles, and accomplishments.</p>
+                    <p className="text-sm text-[#71717A] mt-0.5">Manage your career history, milestones, and display order.</p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-2.5">
                     <button
                       type="button"
-                      onClick={addExperience}
-                      className="px-4 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.1] text-white hover:bg-white/[0.08] text-xs font-medium flex items-center gap-1.5 cursor-pointer"
+                      onClick={() => addExperience('top')}
+                      className="px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[#A1A1AA] hover:text-white hover:bg-white/[0.08] text-xs font-medium flex items-center gap-1.5 cursor-pointer transition-colors"
+                      title="Add a new milestone at position #1 (top)"
                     >
-                      <Plus className="w-4 h-4 text-[#FF6B00]" /> Add Milestone
+                      <Plus className="w-3.5 h-3.5 text-[#FF6B00]" /> Add at Top (#1)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addExperience('bottom')}
+                      className="px-3.5 py-2 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.1] text-xs font-medium flex items-center gap-1.5 cursor-pointer transition-colors"
+                      title="Add a new milestone at the bottom"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-[#FF6B00]" /> + Add Milestone
                     </button>
                     <button
                       onClick={handleSaveContent}
                       disabled={isSaving}
-                      className="px-5 py-2.5 rounded-xl bg-[#FF6B00] text-white font-semibold text-xs sm:text-sm hover:bg-[#FF8533] transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#FF6B00]/20 disabled:opacity-50"
+                      className="px-5 py-2 rounded-xl bg-[#FF6B00] text-white font-semibold text-xs sm:text-sm hover:bg-[#FF8533] transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#FF6B00]/20 disabled:opacity-50"
                     >
                       {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                       <span>Save Changes</span>
@@ -1272,77 +1339,142 @@ export default function AdminPage() {
                 </div>
 
                 <div className="space-y-5">
-                  {(content.experiences || []).map((exp, idx) => (
-                    <div key={idx} className="bg-[#111113] border border-white/[0.06] rounded-2xl p-6 card-shadow space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-code text-[#FF6B00]">Milestone #{idx + 1}</span>
-                        <div className="flex items-center gap-3">
-                          <label className="flex items-center gap-2 text-xs text-[#A1A1AA] cursor-pointer">
+                  {(content.experiences || []).map((exp, idx) => {
+                    const isFirst = idx === 0;
+                    const isLast = idx === (content.experiences?.length || 1) - 1;
+                    const totalMilestones = content.experiences?.length || 1;
+
+                    return (
+                      <div key={idx} className="bg-[#111113] border border-white/[0.08] hover:border-white/[0.15] rounded-2xl p-6 card-shadow space-y-4 transition-all">
+                        {/* Milestone Card Header */}
+                        <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-white/[0.06]">
+                          <div className="flex items-center gap-2.5">
+                            <span className="font-code text-xs font-bold text-[#FF6B00] px-2.5 py-1 rounded-md bg-[#FF6B00]/10 border border-[#FF6B00]/20">
+                              Milestone #{idx + 1}
+                            </span>
+                            {exp.current && (
+                              <span className="text-[10px] font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded-full border border-amber-400/20 uppercase tracking-wider">
+                                Current Role
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Position Controls Bar */}
+                          <div className="flex items-center gap-2">
+                            {/* Move Up / Down Buttons */}
+                            <div className="flex items-center rounded-lg bg-white/[0.03] border border-white/[0.08] p-0.5">
+                              <button
+                                type="button"
+                                onClick={() => moveExperience(idx, 'up')}
+                                disabled={isFirst}
+                                className="p-1.5 rounded-md hover:bg-white/[0.1] text-white text-xs disabled:opacity-25 transition-all cursor-pointer disabled:cursor-not-allowed flex items-center gap-1"
+                                title="Move Earlier / Up"
+                              >
+                                <ChevronUp className="w-3.5 h-3.5" />
+                                <span className="text-[10px] hidden sm:inline">Up</span>
+                              </button>
+                              <div className="w-[1px] h-3 bg-white/[0.08]" />
+                              <button
+                                type="button"
+                                onClick={() => moveExperience(idx, 'down')}
+                                disabled={isLast}
+                                className="p-1.5 rounded-md hover:bg-white/[0.1] text-white text-xs disabled:opacity-25 transition-all cursor-pointer disabled:cursor-not-allowed flex items-center gap-1"
+                                title="Move Later / Down"
+                              >
+                                <span className="text-[10px] hidden sm:inline">Down</span>
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+
+                            {/* Direct Position Selector */}
+                            <div className="flex items-center gap-1.5 text-xs text-[#71717A] bg-white/[0.03] border border-white/[0.08] rounded-lg px-2 py-1">
+                              <span className="text-[11px] hidden sm:inline">Pos:</span>
+                              <select
+                                value={idx}
+                                onChange={(e) => moveExperienceToPosition(idx, parseInt(e.target.value))}
+                                className="bg-transparent text-white text-xs font-code font-bold outline-none cursor-pointer"
+                                title="Change position number directly"
+                              >
+                                {Array.from({ length: totalMilestones }).map((_, pIdx) => (
+                                  <option key={pIdx} value={pIdx} className="bg-[#16161A] text-white">
+                                    #{pIdx + 1}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* Current Role checkbox */}
+                            <label className="flex items-center gap-1.5 text-xs text-[#A1A1AA] cursor-pointer px-2 py-1 rounded-lg hover:bg-white/[0.03]">
+                              <input
+                                type="checkbox"
+                                checked={!!exp.current}
+                                onChange={(e) => updateExperience(idx, "current", e.target.checked)}
+                                className="accent-[#FF6B00] rounded cursor-pointer"
+                              />
+                              <span className="text-[11px] hidden sm:inline">Active</span>
+                            </label>
+
+                            {/* Delete Button */}
+                            <button
+                              type="button"
+                              onClick={() => removeExperience(idx)}
+                              className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors cursor-pointer"
+                              title="Delete milestone"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Fields */}
+                        <div className="grid sm:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Company / Organization</label>
                             <input
-                              type="checkbox"
-                              checked={exp.current}
-                              onChange={(e) => updateExperience(idx, "current", e.target.checked)}
-                              className="accent-[#FF6B00] rounded"
+                              type="text"
+                              value={exp.company}
+                              onChange={(e) => updateExperience(idx, "company", e.target.value)}
+                              placeholder="e.g. Quickcarts / Serverlink"
+                              className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white text-sm focus:border-[#FF6B00] outline-none"
                             />
-                            <span>Current Role</span>
-                          </label>
-                          <button
-                            type="button"
-                            onClick={() => removeExperience(idx)}
-                            className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 cursor-pointer"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
+                          </div>
 
-                      <div className="grid sm:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Company</label>
-                          <input
-                            type="text"
-                            value={exp.company}
-                            onChange={(e) => updateExperience(idx, "company", e.target.value)}
-                            placeholder="Quickcarts"
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white text-sm focus:border-[#FF6B00] outline-none"
-                          />
-                        </div>
+                          <div>
+                            <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Role / Job Title</label>
+                            <input
+                              type="text"
+                              value={exp.role}
+                              onChange={(e) => updateExperience(idx, "role", e.target.value)}
+                              placeholder="e.g. Founder & Lead Developer"
+                              className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white text-sm focus:border-[#FF6B00] outline-none"
+                            />
+                          </div>
 
-                        <div>
-                          <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Role / Title</label>
-                          <input
-                            type="text"
-                            value={exp.role}
-                            onChange={(e) => updateExperience(idx, "role", e.target.value)}
-                            placeholder="Lead Developer"
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white text-sm focus:border-[#FF6B00] outline-none"
-                          />
+                          <div>
+                            <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Duration / Timeframe</label>
+                            <input
+                              type="text"
+                              value={exp.duration}
+                              onChange={(e) => updateExperience(idx, "duration", e.target.value)}
+                              placeholder="e.g. Present / 1 year / 6 months"
+                              className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white text-sm focus:border-[#FF6B00] outline-none"
+                            />
+                          </div>
                         </div>
 
                         <div>
-                          <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Duration</label>
-                          <input
-                            type="text"
-                            value={exp.duration}
-                            onChange={(e) => updateExperience(idx, "duration", e.target.value)}
-                            placeholder="Present / 1 year"
+                          <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Impact & Key Highlights</label>
+                          <textarea
+                            rows={2}
+                            value={exp.impact}
+                            onChange={(e) => updateExperience(idx, "impact", e.target.value)}
+                            placeholder="What systems did you build, scale, or deliver in this role?"
                             className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white text-sm focus:border-[#FF6B00] outline-none"
                           />
                         </div>
                       </div>
-
-                      <div>
-                        <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Impact & Description</label>
-                        <textarea
-                          rows={2}
-                          value={exp.impact}
-                          onChange={(e) => updateExperience(idx, "impact", e.target.value)}
-                          placeholder="What did you build or lead in this position?"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white text-sm focus:border-[#FF6B00] outline-none"
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -1350,23 +1482,31 @@ export default function AdminPage() {
             {/* 7. TESTIMONIALS TAB */}
             {activeTab === "testimonials" && content && (
               <div className="space-y-6 max-w-4xl">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
                     <h2 className="text-2xl font-bold font-heading text-white">Client Testimonials</h2>
-                    <p className="text-sm text-[#71717A] mt-0.5">Manage references, client reviews, and student endorsements.</p>
+                    <p className="text-sm text-[#71717A] mt-0.5">Manage references, client reviews, and their display order.</p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-2.5">
                     <button
                       type="button"
-                      onClick={addTestimonial}
-                      className="px-4 py-2.5 rounded-xl bg-white/[0.05] border border-white/[0.1] text-white hover:bg-white/[0.08] text-xs font-medium flex items-center gap-1.5 cursor-pointer"
+                      onClick={() => addTestimonial('top')}
+                      className="px-3 py-2 rounded-xl bg-white/[0.04] border border-white/[0.08] text-[#A1A1AA] hover:text-white hover:bg-white/[0.08] text-xs font-medium flex items-center gap-1.5 cursor-pointer transition-colors"
+                      title="Add review at position #1 (top)"
                     >
-                      <Plus className="w-4 h-4 text-[#FF6B00]" /> Add Review
+                      <Plus className="w-3.5 h-3.5 text-[#FF6B00]" /> Add at Top
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => addTestimonial('bottom')}
+                      className="px-3.5 py-2 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white hover:bg-white/[0.1] text-xs font-medium flex items-center gap-1.5 cursor-pointer transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-[#FF6B00]" /> + Add Review
                     </button>
                     <button
                       onClick={handleSaveContent}
                       disabled={isSaving}
-                      className="px-5 py-2.5 rounded-xl bg-[#FF6B00] text-white font-semibold text-xs sm:text-sm hover:bg-[#FF8533] transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#FF6B00]/20 disabled:opacity-50"
+                      className="px-5 py-2 rounded-xl bg-[#FF6B00] text-white font-semibold text-xs sm:text-sm hover:bg-[#FF8533] transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#FF6B00]/20 disabled:opacity-50"
                     >
                       {isSaving ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                       <span>Save Changes</span>
@@ -1375,55 +1515,108 @@ export default function AdminPage() {
                 </div>
 
                 <div className="space-y-5">
-                  {(content.testimonials || []).map((test, idx) => (
-                    <div key={idx} className="bg-[#111113] border border-white/[0.06] rounded-2xl p-6 card-shadow space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-code text-[#FF6B00]">Review #{idx + 1}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeTestimonial(idx)}
-                          className="p-1.5 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 cursor-pointer"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+                  {(content.testimonials || []).map((test, idx) => {
+                    const isFirst = idx === 0;
+                    const isLast = idx === (content.testimonials?.length || 1) - 1;
+                    const totalTestimonials = content.testimonials?.length || 1;
 
-                      <div className="grid sm:grid-cols-2 gap-4">
-                        <div>
-                          <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Author / Name</label>
-                          <input
-                            type="text"
-                            value={test.name}
-                            onChange={(e) => updateTestimonial(idx, "name", e.target.value)}
-                            placeholder="e.g. John Doe / Team Lead"
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white text-sm focus:border-[#FF6B00] outline-none"
-                          />
+                    return (
+                      <div key={idx} className="bg-[#111113] border border-white/[0.08] hover:border-white/[0.15] rounded-2xl p-6 card-shadow space-y-4 transition-all">
+                        {/* Testimonial Header */}
+                        <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+                          <span className="font-code text-xs font-bold text-[#FF6B00] px-2.5 py-1 rounded-md bg-[#FF6B00]/10 border border-[#FF6B00]/20">
+                            Review #{idx + 1}
+                          </span>
+
+                          <div className="flex items-center gap-2">
+                            {/* Move Up / Down Buttons */}
+                            <div className="flex items-center rounded-lg bg-white/[0.03] border border-white/[0.08] p-0.5">
+                              <button
+                                type="button"
+                                onClick={() => moveTestimonial(idx, 'up')}
+                                disabled={isFirst}
+                                className="p-1.5 rounded-md hover:bg-white/[0.1] text-white text-xs disabled:opacity-25 transition-all cursor-pointer disabled:cursor-not-allowed flex items-center gap-1"
+                                title="Move Up"
+                              >
+                                <ChevronUp className="w-3.5 h-3.5" />
+                              </button>
+                              <div className="w-[1px] h-3 bg-white/[0.08]" />
+                              <button
+                                type="button"
+                                onClick={() => moveTestimonial(idx, 'down')}
+                                disabled={isLast}
+                                className="p-1.5 rounded-md hover:bg-white/[0.1] text-white text-xs disabled:opacity-25 transition-all cursor-pointer disabled:cursor-not-allowed flex items-center gap-1"
+                                title="Move Down"
+                              >
+                                <ChevronDown className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+
+                            {/* Direct Position Selector */}
+                            <div className="flex items-center gap-1.5 text-xs text-[#71717A] bg-white/[0.03] border border-white/[0.08] rounded-lg px-2 py-1">
+                              <span className="text-[11px] hidden sm:inline">Pos:</span>
+                              <select
+                                value={idx}
+                                onChange={(e) => moveTestimonialToPosition(idx, parseInt(e.target.value))}
+                                className="bg-transparent text-white text-xs font-code font-bold outline-none cursor-pointer"
+                              >
+                                {Array.from({ length: totalTestimonials }).map((_, pIdx) => (
+                                  <option key={pIdx} value={pIdx} className="bg-[#16161A] text-white">
+                                    #{pIdx + 1}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+
+                            {/* Delete Button */}
+                            <button
+                              type="button"
+                              onClick={() => removeTestimonial(idx)}
+                              className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 cursor-pointer transition-colors"
+                              title="Delete review"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Author / Name</label>
+                            <input
+                              type="text"
+                              value={test.name}
+                              onChange={(e) => updateTestimonial(idx, "name", e.target.value)}
+                              placeholder="e.g. Team Lead / Private Student"
+                              className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white text-sm focus:border-[#FF6B00] outline-none"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Role / Organization</label>
+                            <input
+                              type="text"
+                              value={test.role}
+                              onChange={(e) => updateTestimonial(idx, "role", e.target.value)}
+                              placeholder="e.g. Career On Track / BuildWithWinner"
+                              className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white text-sm focus:border-[#FF6B00] outline-none"
+                            />
+                          </div>
                         </div>
 
                         <div>
-                          <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Role / Organization</label>
-                          <input
-                            type="text"
-                            value={test.role}
-                            onChange={(e) => updateTestimonial(idx, "role", e.target.value)}
-                            placeholder="Career On Track"
+                          <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Quote Content</label>
+                          <textarea
+                            rows={3}
+                            value={test.quote}
+                            onChange={(e) => updateTestimonial(idx, "quote", e.target.value)}
+                            placeholder="What did they say about your work?"
                             className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white text-sm focus:border-[#FF6B00] outline-none"
                           />
                         </div>
                       </div>
-
-                      <div>
-                        <label className="block text-[11px] font-semibold text-[#71717A] uppercase mb-1">Quote Content</label>
-                        <textarea
-                          rows={3}
-                          value={test.quote}
-                          onChange={(e) => updateTestimonial(idx, "quote", e.target.value)}
-                          placeholder="What did they say about your work?"
-                          className="w-full px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white text-sm focus:border-[#FF6B00] outline-none"
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
