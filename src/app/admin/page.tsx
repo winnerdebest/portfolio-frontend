@@ -5,7 +5,8 @@ import {
   User, LayoutDashboard, FileText, Code2, FolderGit2, Briefcase,
   MessageSquareQuote, Send, LogOut, ExternalLink, Save, Plus, Trash2,
   Upload, Eye, CheckCircle2, AlertCircle, Sparkles, Star, ArrowUpRight,
-  ShieldCheck, Lock, RefreshCw, X, Link as LinkIcon
+  ShieldCheck, Lock, RefreshCw, X, Link as LinkIcon, ChevronLeft, ChevronRight,
+  Image as ImageIcon, ArrowLeft, ArrowRight
 } from "lucide-react";
 import {
   getSiteContent, updateSiteContent, loginAdmin, getStoredToken,
@@ -203,6 +204,44 @@ export default function AdminPage() {
     if (!editingProject) return;
     const imgs = (editingProject.images || []).filter((_, i) => i !== index);
     setEditingProject({ ...editingProject, images: imgs });
+    showToast("Picture deleted from gallery");
+  };
+
+  const moveGalleryImage = (index: number, direction: "prev" | "next") => {
+    if (!editingProject || !editingProject.images) return;
+    const imgs = [...editingProject.images];
+    const targetIndex = direction === "prev" ? index - 1 : index + 1;
+    if (targetIndex < 0 || targetIndex >= imgs.length) return;
+    const temp = imgs[index];
+    imgs[index] = imgs[targetIndex];
+    imgs[targetIndex] = temp;
+    setEditingProject({ ...editingProject, images: imgs });
+  };
+
+  const makeCoverGalleryImage = (index: number) => {
+    if (!editingProject || !editingProject.images) return;
+    const imgs = [...editingProject.images];
+    const [selected] = imgs.splice(index, 1);
+    imgs.unshift(selected);
+    const selectedUrl = typeof selected === "string" ? selected : selected.image;
+    setEditingProject({
+      ...editingProject,
+      images: imgs,
+      preview_image: editingProject.preview_image || selectedUrl,
+    });
+    showToast("Moved to front (#1 cover)!");
+  };
+
+  const setAsPreviewImage = (imageUrl: string) => {
+    if (!editingProject) return;
+    setEditingProject({ ...editingProject, preview_image: imageUrl });
+    showToast("Set as main thumbnail!");
+  };
+
+  const clearAllGalleryImages = () => {
+    if (!editingProject) return;
+    setEditingProject({ ...editingProject, images: [] });
+    showToast("All gallery pictures cleared");
   };
 
   const handleSaveProject = async (e: React.FormEvent) => {
@@ -1548,12 +1587,23 @@ export default function AdminPage() {
 
               {/* Preview image upload */}
               <div>
-                <label className="block text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider mb-2">
-                  Main Thumbnail / Preview Image
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider">
+                    Main Thumbnail / Preview Image
+                  </label>
+                  {editingProject.preview_image && (
+                    <button
+                      type="button"
+                      onClick={() => setEditingProject({ ...editingProject, preview_image: null })}
+                      className="text-[11px] text-red-400 hover:text-red-300 flex items-center gap-1 cursor-pointer transition-colors"
+                    >
+                      <Trash2 className="w-3 h-3" /> Remove Thumbnail
+                    </button>
+                  )}
+                </div>
                 <div className="space-y-3">
                   {editingProject.preview_image && (
-                    <div className="relative w-full h-44 rounded-xl overflow-hidden bg-black/60 border border-white/[0.08]">
+                    <div className="relative w-full h-44 rounded-xl overflow-hidden bg-black/60 border border-white/[0.08] group">
                       <img
                         src={editingProject.preview_image}
                         alt="Preview"
@@ -1586,55 +1636,151 @@ export default function AdminPage() {
               </div>
 
               {/* Gallery Multiple Pictures (Detail page carousel) */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
+              <div className="space-y-3 pt-2 border-t border-white/[0.06]">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div>
-                    <label className="block text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider">
-                      Detail Page Gallery (Multiple Pictures)
-                    </label>
-                    <p className="text-[11px] text-[#71717A]">These appear in the interactive carousel on the project detail view.</p>
+                    <div className="flex items-center gap-2">
+                      <label className="block text-xs font-semibold text-[#A1A1AA] uppercase tracking-wider">
+                        Detail Page Gallery (Multiple Pictures)
+                      </label>
+                      {editingProject.images && editingProject.images.length > 0 && (
+                        <span className="px-2 py-0.5 rounded-full bg-[#FF6B00]/15 text-[#FF6B00] text-[10px] font-code font-bold">
+                          {editingProject.images.length} {editingProject.images.length === 1 ? 'picture' : 'pictures'}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-[#71717A] mt-0.5">
+                      Order matters! The first picture (#1) is shown first in the carousel. You can reorder or delete below.
+                    </p>
                   </div>
-                  <label className="px-3 py-1.5 rounded-lg bg-[#FF6B00]/10 hover:bg-[#FF6B00]/20 text-[#FF6B00] text-xs font-semibold cursor-pointer flex items-center gap-1.5 border border-[#FF6B00]/30 transition-all shrink-0">
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>{isUploadingGallery ? "Uploading..." : "Add Picture(s)"}</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleGalleryUpload}
-                      className="hidden"
-                      disabled={isUploadingGallery}
-                    />
-                  </label>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    {editingProject.images && editingProject.images.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={clearAllGalleryImages}
+                        className="px-2.5 py-1.5 rounded-lg text-xs font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
+                      >
+                        Clear All
+                      </button>
+                    )}
+                    <label className="px-3.5 py-1.5 rounded-lg bg-[#FF6B00] hover:bg-[#FF8533] text-white text-xs font-semibold cursor-pointer flex items-center gap-1.5 transition-all shadow-md shadow-[#FF6B00]/20">
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>{isUploadingGallery ? "Uploading..." : "+ Add Picture(s)"}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleGalleryUpload}
+                        className="hidden"
+                        disabled={isUploadingGallery}
+                      />
+                    </label>
+                  </div>
                 </div>
 
                 {editingProject.images && editingProject.images.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-1">
                     {editingProject.images.map((imgItem: any, idx: number) => {
                       const imgUrl = typeof imgItem === "string" ? imgItem : imgItem.image;
+                      const isFirst = idx === 0;
+                      const isLast = idx === (editingProject.images?.length || 1) - 1;
+
                       return (
-                        <div key={idx} className="relative group rounded-xl overflow-hidden bg-black/60 border border-white/[0.08] aspect-video">
-                          <img src={imgUrl} alt={`Gallery ${idx + 1}`} className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                        <div
+                          key={idx}
+                          className={`relative rounded-xl overflow-hidden bg-[#111113] border transition-all ${
+                            isFirst ? 'border-[#FF6B00]/50 ring-1 ring-[#FF6B00]/30' : 'border-white/[0.08] hover:border-white/[0.2]'
+                          }`}
+                        >
+                          {/* Image Container */}
+                          <div className="relative aspect-video bg-black/80 flex items-center justify-center overflow-hidden">
+                            <img
+                              src={imgUrl}
+                              alt={`Gallery screenshot ${idx + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+
+                            {/* Top Badges */}
+                            <div className="absolute top-2 left-2 flex items-center gap-1.5 pointer-events-none">
+                              {isFirst ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#FF6B00] text-white text-[10px] font-bold shadow-md shadow-black/60">
+                                  <Star className="w-2.5 h-2.5 fill-current" /> #1 Cover
+                                </span>
+                              ) : (
+                                <span className="px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-sm text-white/90 text-[10px] font-code font-semibold border border-white/10">
+                                  #{idx + 1}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Delete Button (Always clear and visible in top-right) */}
                             <button
                               type="button"
                               onClick={() => removeGalleryImage(idx)}
-                              className="p-1.5 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors cursor-pointer"
+                              className="absolute top-2 right-2 p-1.5 rounded-lg bg-red-600/90 hover:bg-red-600 text-white shadow-lg shadow-black/80 hover:scale-110 transition-all cursor-pointer z-10"
                               title="Delete this picture"
                             >
-                              <Trash2 className="w-4 h-4" />
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
-                          <span className="absolute bottom-1 left-1.5 px-1.5 py-0.5 rounded bg-black/70 text-[9px] font-code text-[#A1A1AA]">
-                            #{idx + 1}
-                          </span>
+
+                          {/* Bottom Controls Bar */}
+                          <div className="p-2 bg-[#16161A] border-t border-white/[0.06] flex items-center justify-between gap-1">
+                            {/* Position Shifters */}
+                            <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                onClick={() => moveGalleryImage(idx, 'prev')}
+                                disabled={isFirst}
+                                className="p-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.12] text-white text-xs disabled:opacity-25 disabled:hover:bg-white/[0.05] transition-all cursor-pointer disabled:cursor-not-allowed flex items-center gap-1"
+                                title="Move Earlier / Left"
+                              >
+                                <ChevronLeft className="w-3.5 h-3.5" />
+                                <span className="text-[10px] hidden sm:inline">Left</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => moveGalleryImage(idx, 'next')}
+                                disabled={isLast}
+                                className="p-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.12] text-white text-xs disabled:opacity-25 disabled:hover:bg-white/[0.05] transition-all cursor-pointer disabled:cursor-not-allowed flex items-center gap-1"
+                                title="Move Later / Right"
+                              >
+                                <span className="text-[10px] hidden sm:inline">Right</span>
+                                <ChevronRight className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+
+                            {/* Make Cover / Main Thumbnail */}
+                            <div className="flex items-center gap-1">
+                              {!isFirst && (
+                                <button
+                                  type="button"
+                                  onClick={() => makeCoverGalleryImage(idx)}
+                                  className="px-2 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 text-[10px] font-semibold transition-all cursor-pointer border border-amber-500/20 flex items-center gap-1"
+                                  title="Move this image to position #1"
+                                >
+                                  <Star className="w-3 h-3" /> Make #1
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => setAsPreviewImage(imgUrl)}
+                                className="p-1.5 rounded-lg bg-white/[0.05] hover:bg-[#FF6B00]/20 text-[#A1A1AA] hover:text-[#FF6B00] text-[10px] transition-all cursor-pointer"
+                                title="Use as main card thumbnail"
+                              >
+                                <ImageIcon className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       );
                     })}
                   </div>
                 ) : (
-                  <div className="text-xs text-[#71717A] bg-white/[0.02] border border-dashed border-white/[0.08] rounded-xl p-4 text-center">
-                    No gallery pictures uploaded yet. Click &quot;Add Picture(s)&quot; to upload screenshots.
+                  <div className="text-xs text-[#71717A] bg-white/[0.02] border border-dashed border-white/[0.08] rounded-xl p-6 text-center space-y-1.5">
+                    <p className="font-medium text-[#A1A1AA]">No gallery pictures added yet</p>
+                    <p className="text-[11px]">Click &quot;+ Add Picture(s)&quot; above to upload screenshots for the project details carousel.</p>
                   </div>
                 )}
               </div>
