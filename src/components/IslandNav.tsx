@@ -14,8 +14,10 @@ export default function IslandNav() {
   const router = useRouter();
   const pathname = usePathname();
   const isHomePage = pathname === '/';
+  const isAdmin = pathname?.startsWith('/admin');
 
   useEffect(() => {
+    if (isAdmin) return;
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
 
@@ -32,7 +34,10 @@ export default function IslandNav() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [isHomePage]);
+  }, [isHomePage, isAdmin]);
+
+  if (isAdmin) return null;
+
 
   const handleNavClick = (item: string) => {
     setIsMenuOpen(false);

@@ -4,20 +4,21 @@ import React, { useState, useRef } from 'react';
 import emailjs from '@emailjs/browser';
 import {
   Github, Linkedin, Mail, MapPin, Phone,
-  ArrowRight, Palette, Terminal, MessageSquare, Users, Quote
+  ArrowRight, MessageSquare, Quote
 } from 'lucide-react';
 import ClientProjectsSection, { Project } from "@/components/ProjectsSection";
 import SpotifyNowPlaying from "@/components/SpotifyNowPlaying";
 import TypeWriter from "@/components/TypeWriter";
 import { useScrollReveal } from "@/hooks/useScrollReveal";
+import { SiteContent } from "@/types/content";
 
 const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || 'service_xxxxxxx';
 const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || 'template_xxxxxxx';
 const EMAILJS_PUBLIC_KEY = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || 'aBcDeFgHiJ123456';
 
-const TYPEWRITER_TEXTS = ['Full-Stack Engineer', 'SaaS Builder', 'Problem Solver'];
+const DEFAULT_TYPEWRITER_TEXTS = ['Full-Stack Engineer', 'SaaS Builder', 'Problem Solver'];
 
-const skillCategories = [
+const DEFAULT_SKILL_CATEGORIES = [
   {
     title: 'Backend',
     skills: [
@@ -60,14 +61,7 @@ const skillCategories = [
   },
 ];
 
-const paymentIntegrations = [
-  { name: 'Flutterwave' },
-  { name: 'Paystack' },
-  { name: 'Stripe' },
-  { name: 'DodoPay' },
-];
-
-const testimonials = [
+const DEFAULT_TESTIMONIALS = [
   {
     quote: "Winner has a rare ability to move fast without breaking things. He built and maintained critical features on our platform while keeping the codebase clean and the CI/CD pipeline airtight. Exactly the kind of engineer you want on a production system.",
     name: "Team lead",
@@ -85,8 +79,7 @@ const testimonials = [
   },
 ];
 
-
-const experiences = [
+const DEFAULT_EXPERIENCES = [
   {
     company: 'Quickcarts',
     role: 'Founder & Lead Developer',
@@ -119,13 +112,40 @@ const experiences = [
 
 type PortfolioClientProps = {
   initialProjects?: Project[];
+  initialContent?: SiteContent | null;
 };
 
-const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
+const PortfolioClient = ({ initialProjects, initialContent }: PortfolioClientProps) => {
   const formRef = useRef<HTMLFormElement>(null);
   const [formStatus, setFormStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [formError, setFormError] = useState('');
   const pageRef = useScrollReveal();
+
+  const heroTitle = initialContent?.hero_title || "I'm Winner.";
+  const heroTagline = initialContent?.hero_tagline || "Software Engineer building and deploying SaaS products.";
+  const typewriterTexts = initialContent?.typewriter_texts?.length ? initialContent.typewriter_texts : DEFAULT_TYPEWRITER_TEXTS;
+  const avatarUrl = initialContent?.avatar_url || "/winners image.jpeg";
+  const resumeUrl = initialContent?.resume_url || "/WinnerOrluVictor_CV.pdf";
+
+  const aboutQuote = initialContent?.about_quote || "If it's complex, tedious, or critical, that's my lane.";
+  const aboutParagraphs = initialContent?.about_paragraphs?.length ? initialContent.about_paragraphs : [
+    "I'm a Software Engineer with 5+ years of experience building production systems. Not side projects, real products with real users. I've shipped a multi-tenant SaaS platform (QuickCarts) handling escrow payments via Flutterwave, and Paystack. I've built and maintained school management systems, CRMs, and inventory platforms at companies in Nigeria.",
+    "I work across the full stack: Python and Django on the backend, React and Next.js on the frontend, PostgreSQL and Supabase for data, and AWS EC2 for deployment. I also run BuildWithWinner, a coding school where I mentor developers from zero to their first deployed application.",
+    "If it involves building something complex, maintaining it under pressure, or shipping it fast, that's exactly what I do."
+  ];
+  const aboutTags = initialContent?.about_tags?.length ? initialContent.about_tags : ['#Backend', '#Python', '#React', '#DevOps'];
+
+  const skillCategories = initialContent?.skill_categories?.length ? initialContent.skill_categories : DEFAULT_SKILL_CATEGORIES;
+  const testimonials = initialContent?.testimonials?.length ? initialContent.testimonials : DEFAULT_TESTIMONIALS;
+  const experiences = initialContent?.experiences?.length ? initialContent.experiences : DEFAULT_EXPERIENCES;
+
+  const contactEmail = initialContent?.contact_email || "winnerbrown9@gmail.com";
+  const contactPhone = initialContent?.contact_phone || "+234 814 231 0497";
+  const contactLocation = initialContent?.contact_location || "Rivers State, Nigeria";
+  const whatsappNumber = initialContent?.whatsapp_number || "+2348142310497";
+  const githubUrl = initialContent?.github_url || "https://github.com/winnerdebest";
+  const linkedinUrl = initialContent?.linkedin_url || "https://linkedin.com/in/winner-orluvictor-944175333";
+  const xUrl = initialContent?.x_url || "https://x.com/buildwithwinner";
 
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -150,7 +170,7 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
     } catch (err) {
       console.error(err);
       setFormStatus('error');
-      setFormError('Failed to send. Please email me directly at winnerbrown9@gmail.com');
+      setFormError(`Failed to send. Please email me directly at ${contactEmail}`);
     }
   };
 
@@ -175,10 +195,10 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
               {/* Outer glow */}
               <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-[#FF6B00]/50 to-[#FFB800]/20 blur-md opacity-60 group-hover:opacity-90 transition-opacity duration-500" />
               {/* Image circle */}
-              <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-2 border-[#FF6B00]/40 shadow-2xl shadow-[#FF6B00]/10">
+              <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-2 border-[#FF6B00]/40 shadow-2xl shadow-[#FF6B00]/10 bg-[#111113]">
                 <img
-                  src="/winners image.jpeg"
-                  alt="Winner OrluVictor"
+                  src={avatarUrl}
+                  alt={heroTitle}
                   className="w-full h-full object-cover object-top scale-110 transition-transform duration-700 group-hover:scale-115"
                   style={{ filter: 'grayscale(100%) contrast(1.15) brightness(0.85)' }}
                 />
@@ -192,24 +212,22 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
           <div className="space-y-3 mb-10">
             <h1 className="font-heading font-black text-white leading-[1.05] tracking-tight"
                 style={{ fontSize: 'clamp(2.2rem, 5.5vw, 4rem)' }}>
-              I&apos;m Winner.
+              {heroTitle}
             </h1>
             <p className="font-heading font-bold text-[#A1A1AA] leading-snug"
                 style={{ fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)' }}>
-              Software Engineer building and deploying SaaS products.
+              {heroTagline}
             </p>
             {/* Typewriter role */}
             <div className="text-lg sm:text-xl lg:text-2xl font-body text-[#FF6B00] font-medium flex items-center justify-center gap-2">
-              <TypeWriter texts={TYPEWRITER_TEXTS} />
+              <TypeWriter texts={typewriterTexts} />
             </div>
           </div>
-
-
 
           {/* ── CTAs ── */}
           <div className="flex flex-wrap gap-3 justify-center">
             <a
-              href="/WinnerOrluVictor_CV.pdf"
+              href={resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="px-7 py-3 rounded-xl bg-[#FF6B00] text-white font-semibold text-sm hover:bg-[#FF8533] hover:shadow-xl hover:shadow-[#FF6B00]/30 hover:scale-105 transition-all flex items-center gap-2"
@@ -229,9 +247,6 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
         </div>
       </section>
 
-
-
-
       {/* ── About ── */}
       <section id="about" className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-[#050505] relative overflow-hidden">
         <div className="max-w-6xl mx-auto relative">
@@ -243,11 +258,11 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
             <div className="lg:w-2/5 space-y-8">
               <div className="border-l-4 border-[#FF6B00] pl-6 py-2 scroll-reveal delay-100">
                 <p className="font-heading italic text-2xl md:text-3xl text-white leading-tight">
-                  &quot;If it&apos;s complex, tedious, or critical, that&apos;s my lane.&quot;
+                  &quot;{aboutQuote}&quot;
                 </p>
               </div>
               <div className="flex flex-wrap gap-3 scroll-reveal delay-200">
-                {['#Backend', '#Python', '#React', '#DevOps'].map(tag => (
+                {aboutTags.map(tag => (
                   <span key={tag}
                     className="font-code text-sm px-4 py-2 border border-white/[0.08] rounded-full text-[#A1A1AA] hover:border-[#FF6B00] hover:text-[#FF6B00] transition-all cursor-default bg-white/[0.02]">
                     {tag}
@@ -257,27 +272,10 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
             </div>
             <div className="lg:w-3/5 space-y-12">
               <div className="space-y-6 text-lg text-[#A1A1AA] leading-relaxed scroll-reveal delay-200">
-                <p>I&apos;m a Software Engineer with 5+ years of experience building production systems. Not side projects, real products with real users. I&apos;ve shipped a multi-tenant SaaS platform (QuickCarts) handling escrow payments via Flutterwave, and Paystack. I&apos;ve built and maintained school management systems, CRMs, and inventory platforms at companies in Nigeria.</p>
-                <p>I work across the full stack: Python and Django on the backend, React and Next.js on the frontend, PostgreSQL and Supabase for data, and AWS EC2 for deployment. I also run BuildWithWinner, a coding school where I mentor developers from zero to their first deployed application.</p>
-                <p>If it involves building something complex, maintaining it under pressure, or shipping it fast, that&apos;s exactly what I do.</p>
+                {aboutParagraphs.map((para, idx) => (
+                  <p key={idx}>{para}</p>
+                ))}
               </div>
-              {/*<div>
-                <h3 className="font-heading font-bold text-xl text-white mb-6 scroll-reveal delay-300">Core Philosophy</h3>
-                <div className="grid sm:grid-cols-3 gap-6">
-                  {[
-                    { icon: <Palette className="w-8 h-8" />, title: 'User First', desc: 'User experience drives technical decisions', delay: 'delay-300' },
-                    { icon: <Terminal className="w-8 h-8" />, title: 'Growth', desc: 'Continuous learning and improvement', delay: 'delay-400' },
-                    { icon: <Users className="w-8 h-8" />, title: 'Teamwork', desc: 'Collaboration creates better products', delay: 'delay-500' },
-                  ].map(p => (
-                    <div key={p.title}
-                      className={`bg-[#111113] p-6 border border-white/[0.06] rounded-xl card-shadow hover:border-[#FF6B00]/30 transition-all group glow-ring scroll-reveal ${p.delay}`}>
-                      <div className="text-[#71717A] mb-4 group-hover:text-[#FF6B00] transition-colors">{p.icon}</div>
-                      <h4 className="font-heading font-bold text-white mb-2">{p.title}</h4>
-                      <p className="text-sm text-[#71717A]">{p.desc}</p>
-                    </div>
-                  ))}
-                </div>
-              </div> */}
             </div>
           </div>
         </div>
@@ -297,23 +295,23 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
           <div className="grid gap-5 md:grid-cols-2">
             {skillCategories.map((category, index) => (
               <div
-                key={category.title}
-                className={`scroll-reveal bg-[#111113] border border-white/[0.06] rounded-xl p-5 sm:p-6 card-shadow transition-all duration-300 hover:-translate-y-1 hover:border-[#FF6B00]/30 glow-ring ${['delay-0','delay-100','delay-200','delay-300','delay-400'][index]}`}
+                key={category.title || index}
+                className={`scroll-reveal bg-[#111113] border border-white/[0.06] rounded-xl p-5 sm:p-6 card-shadow transition-all duration-300 hover:-translate-y-1 hover:border-[#FF6B00]/30 glow-ring ${['delay-0','delay-100','delay-200','delay-300','delay-400'][index % 5]}`}
               >
                 <div className="mb-5 flex items-center justify-between gap-4">
                   <h3 className="font-heading text-lg font-bold text-white">{category.title}</h3>
                   <span className="font-code text-xs text-[#71717A]">
-                    {String(category.skills.length).padStart(2, '0')}
+                    {String(category.skills?.length || 0).padStart(2, '0')}
                   </span>
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                  {category.skills.map((skill) => (
+                  {category.skills?.map((skill, sIdx) => (
                     <div
-                      key={skill.name}
+                      key={skill.name || sIdx}
                       className="group flex min-h-12 items-center gap-3 rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-3 transition-all duration-300 hover:border-[#FF6B00]/40 hover:bg-[#FF6B00]/10"
                     >
-                      <i className={`${skill.iconClass} text-2xl leading-none text-[#71717A] transition-transform duration-300 group-hover:scale-110`} />
+                      <i className={`${skill.iconClass || 'devicon-terminal-plain'} text-2xl leading-none text-[#71717A] transition-transform duration-300 group-hover:scale-110`} />
                       <span className="text-sm font-semibold text-white">{skill.name}</span>
                     </div>
                   ))}
@@ -327,7 +325,7 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
       {/* ── Projects ── */}
       <ClientProjectsSection endpoint="/projects/" limit={4} initialProjects={initialProjects} />
 
-      {/* ── Testimonials (Change 6) ── */}
+      {/* ── Testimonials ── */}
       <section id="testimonials" className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-[#0A0A0C] relative overflow-hidden">
         <div className="max-w-6xl mx-auto relative">
           <div className="section-number">04</div>
@@ -342,7 +340,7 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
             {testimonials.map((t, i) => (
               <div
                 key={i}
-                className={`bg-[#111113] rounded-2xl border border-white/[0.06] p-6 md:p-8 card-shadow border-l-4 border-l-[#FF6B00] hover:-translate-y-1 hover:border-white/[0.12] transition-all duration-300 scroll-reveal ${['delay-100','delay-200','delay-300'][i]}`}
+                className={`bg-[#111113] rounded-2xl border border-white/[0.06] p-6 md:p-8 card-shadow border-l-4 border-l-[#FF6B00] hover:-translate-y-1 hover:border-white/[0.12] transition-all duration-300 scroll-reveal ${['delay-100','delay-200','delay-300'][i % 3]}`}
               >
                 <Quote className="w-8 h-8 text-[#FF6B00]/30 mb-4" />
                 <p className="text-[#A1A1AA] text-sm md:text-base leading-relaxed mb-6 font-body italic">
@@ -377,7 +375,7 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
 
             <div className="space-y-8 sm:space-y-10">
               {experiences.map((exp, index) => (
-                <div key={index} className={`relative group scroll-reveal ${['delay-0','delay-100','delay-200','delay-300'][index] ?? 'delay-300'}`}>
+                <div key={index} className={`relative group scroll-reveal ${['delay-0','delay-100','delay-200','delay-300'][index % 4]}`}>
                   {/* Dot */}
                   <div className={`absolute -left-[35px] md:-left-[43px] top-7 w-5 h-5 rounded-full bg-[#050505] border-2 z-10 transition-all duration-300 group-hover:scale-110 ${exp.current
                     ? 'border-[#FF6B00] shadow-[0_0_0_4px_rgba(255,107,0,0.15)]'
@@ -435,8 +433,8 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
             <div className="w-full lg:w-1/3 space-y-6 scroll-reveal delay-100">
               {[
-                { href: 'mailto:winnerbrown9@gmail.com', icon: <Mail className="w-6 h-6" />, label: 'Email', value: 'winnerbrown9@gmail.com' },
-                { href: 'tel:+2348142310497', icon: <Phone className="w-6 h-6" />, label: 'Phone', value: '+234 814 231 0497' },
+                { href: `mailto:${contactEmail}`, icon: <Mail className="w-6 h-6" />, label: 'Email', value: contactEmail },
+                { href: `tel:${contactPhone.replace(/\s+/g, '')}`, icon: <Phone className="w-6 h-6" />, label: 'Phone', value: contactPhone },
               ].map(c => (
                 <a key={c.label} href={c.href}
                   className="flex items-center gap-4 bg-[#111113] p-5 rounded-xl border border-white/[0.06] card-shadow hover:-translate-y-1 transition-all group glow-ring">
@@ -455,23 +453,23 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
                 </div>
                 <div>
                   <div className="text-sm text-[#71717A] mb-1">Location</div>
-                  <div className="font-medium text-white">Rivers State, Nigeria</div>
+                  <div className="font-medium text-white">{contactLocation}</div>
                 </div>
               </div>
               <div className="pt-6">
                 <h4 className="font-heading font-bold text-lg text-white mb-4">Connect with me</h4>
                 <div className="flex gap-4">
                   {[
-                    { href: 'https://github.com/winnerdebest', icon: <Github className="w-6 h-6" /> },
-                    { href: 'https://linkedin.com/in/winner-orluvictor-944175333', icon: <Linkedin className="w-6 h-6" /> },
+                    { href: githubUrl, icon: <Github className="w-6 h-6" /> },
+                    { href: linkedinUrl, icon: <Linkedin className="w-6 h-6" /> },
                     {
-                      href: 'https://x.com/buildwithwinner', icon: (
+                      href: xUrl, icon: (
                         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                           <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                         </svg>
                       )
                     },
-                  ].map((s, i) => (
+                  ].filter(s => !!s.href).map((s, i) => (
                     <a key={i} href={s.href} target="_blank" rel="noopener noreferrer"
                       className="w-12 h-12 bg-[#111113] border border-white/[0.06] rounded-lg flex items-center justify-center card-shadow hover:-translate-y-1 hover:border-[#FF6B00]/50 hover:text-[#FF6B00] transition-all text-[#71717A] glow-ring">
                       {s.icon}
@@ -548,20 +546,24 @@ const PortfolioClient = ({ initialProjects }: PortfolioClientProps) => {
             <p className="text-xs text-[#52525B] mt-1">Building production software from Nigeria for the world.</p>
           </div>
           <div className="flex items-center gap-6">
-            <a href="https://github.com/winnerdebest" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6B00] transition-colors"><Github className="w-5 h-5" /></a>
-            <a href="https://linkedin.com/in/winner-orluvictor-944175333" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6B00] transition-colors"><Linkedin className="w-6 h-6" /></a>
-            <a href="https://x.com/buildwithwinner" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6B00] transition-colors">
-              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-            </a>
+            {githubUrl && <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6B00] transition-colors"><Github className="w-5 h-5" /></a>}
+            {linkedinUrl && <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6B00] transition-colors"><Linkedin className="w-5 h-5" /></a>}
+            {xUrl && (
+              <a href={xUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6B00] transition-colors">
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+              </a>
+            )}
           </div>
         </div>
       </footer>
 
       {/* ── WhatsApp FAB ── */}
-      <a href="https://wa.me/+2348142310497" target="_blank" rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#FF6B00] rounded-full flex items-center justify-center shadow-lg shadow-[#FF6B00]/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#FF6B00]/40 transition-all duration-300">
-        <MessageSquare className="w-6 h-6 text-white" />
-      </a>
+      {whatsappNumber && (
+        <a href={`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer"
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-[#FF6B00] rounded-full flex items-center justify-center shadow-lg shadow-[#FF6B00]/30 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#FF6B00]/40 transition-all duration-300">
+          <MessageSquare className="w-6 h-6 text-white" />
+        </a>
+      )}
     </div>
   );
 };
